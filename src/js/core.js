@@ -1,4 +1,4 @@
-class Calendar {
+class Datepicker {
   #MS_IN_SEC = 1000;
   #SEC_IN_MIN = 60;
   #MIN_IN_HOUR = 60;
@@ -6,8 +6,10 @@ class Calendar {
   #MS_IN_MIN = this.#SEC_IN_MIN * this.#MS_IN_SEC;
   #MS_IN_HOUR = this.#MIN_IN_HOUR * this.#MS_IN_MIN;
   #MS_IN_DAY = this.#HOURS_IN_DAY * this.#MS_IN_HOUR;
-  #SERVER_TIME_ZONE = 0;
+  #SEC_IN_DAY = this.#MS_IN_DAY / this.#MS_IN_SEC;
   #MONTH_IN_YEAR = 12;
+  #MIN_TIME_GAP_SEC = 10 * this.#SEC_IN_MIN; // 10 minutes in seconds
+  #MAX_TIME_GAP_SEC = this.#SEC_IN_DAY;
 
   #constants = {
     weekDayCount: 7,
@@ -24,15 +26,15 @@ class Calendar {
     this.clientInitDate = new Date();
 
     this.container =
-        props.element === undefined
+        props.container == null
             ? document.querySelector('[data-calendar]')
-            : typeof props.element === 'string'
-                ? document.querySelector(props.element)
-                : props.element;
+            : typeof props.container === 'string'
+                ? document.querySelector(props.container)
+                : props.container;
 
     this.exceptions = props.exceptions;
 
-    this.mode = props.mode !== undefined
+    this.mode = props.mode != null
         ? props.mode
         : 'dateSingle';
 
@@ -50,9 +52,12 @@ class Calendar {
         ? props.autoSelectFirstTime
         : false;
 
-    this.timeGap = props.timeGap !== undefined
-        ? props.timeGap * this.#MS_IN_SEC
-        : false;
+    this.timeGap =
+        props.timeGap != null
+        && props.timeGap >= this.#MIN_TIME_GAP_SEC
+        && props.timeGap <= this.#MAX_TIME_GAP_SEC
+            ? props.timeGap * this.#MS_IN_SEC
+            : false;
 
     this.showOtherMonthsDays = props.showOtherMonthsDays !== undefined
         ? props.showOtherMonthsDays
@@ -116,11 +121,12 @@ class Calendar {
       this.modeMap.dateSingle();
       this.daySelection.effect(this.chosenTimeRangeEffect, {firstCall: false})
 
+      this.createTimeSelectionsState();
+
       this.setTimeSlotsCount();
       this.insertTimeContainer();
       this.createTimeSlots();
 
-      this.createTimeSelectionsState();
       this.timeSelection.effect([
         this.timeRangeEffect,
         this.chosenTimeRangeEffect
@@ -133,7 +139,7 @@ class Calendar {
   }
 
   exceptionsPrepareMap = {
-    slots: () => {
+    HEXSlots: () => {
       this.processSlotExceptions(this.exception);
       this.prepareSchedule();
     },
@@ -165,47 +171,46 @@ class Calendar {
   }
 
   postFillUpDayMap = {
-    slots: () => {
-      this.exceptionSlots();
+    HEXSlots: () => {
+
+      /*test*/
+      this.schedule[2025][5][14].length = 0;
+      /*test*/
+
+
+
+      this.daysSlotsElements.forEach((daySlot) => {
+        if (daySlot.date === null) return;
+
+        const fullYear = daySlot.date.getFullYear();
+        const month = daySlot.date.getMonth();
+        const day = daySlot.date.getDate() - 1;
+
+        if (this.schedule[fullYear][month][day].length === 0) {
+          daySlot.disable = true
+        }
+      })
     }
   }
 
   init = () => {
+
+    this.container.classList.add('ssn-calendar-container');
 
     this.setExceptions();
 
     this.createCalendar();
     this.setEvents();
 
-    this.createCurrentDateState();
-    this.createDaySelectionState();
-
+    this.createCurrentMonthDateState();
     this.currentDate.callEffects();
+
+    this.createDaySelectionState();
     this.daySelection.callEffects();
 
     this.modeMap[this.mode]();
 
-
-
-    console.log(this.daysSlotsElements);
-    console.log(this.timeSlotsElements);
-
     return this;
-  }
-
-  setExceptions = () => {
-    if (this.exceptions === undefined || this.exceptions.length === 0) return;
-
-
-    for (let i = 0; i < this.exceptions.length; i++) {
-      if (this.exceptions[i].prefer) {
-        this.exception = this.exceptions[i];
-
-        this.exceptionsPrepareMap[this.exception.name]();
-
-        return;
-      }
-    }
   }
 
   createCalendar = () => {
@@ -217,6 +222,47 @@ class Calendar {
 
     this.monthHeaderElement = this.container.querySelector('.month-header');
 
+  }
+
+  setEvents = () => {
+    this.prevMontButton = this.container.querySelector('[data-calendar-control="prev"]');
+    this.prevMontButton.addEventListener('click', this.setPrevMonth);
+
+    this.nextMontButton = this.container.querySelector('[data-calendar-control="next"]');
+    this.nextMontButton.addEventListener('click', this.setNextMonth);
+  }
+
+  createCurrentMonthDateState = () => {
+    const fullYear = this.startDate.getFullYear();
+    const month = this.startDate.getMonth();
+
+    this.currentDate = ref(new Date(fullYear, month));
+
+    this.currentDate.effect([
+      this.fillUpMonthHeaderEffect,
+      this.fillUpDaySlotElementsEffect,
+    ], {firstCall: false});
+
+    if (this.disableExpiredDates) {
+      this.currentDate.effect(this.setExpiredDatesEffect, {firstCall: false});
+    }
+
+    if (this.preventPastMonthNavigation) {
+      this.currentDate.effect(this.prevMonthButtonVisibilityControlEffect, {firstCall: false});
+    }
+
+    this.currentDate.effect([
+      this.setDayGridStylesEffect
+    ], {firstCall: false});
+  }
+
+  setExceptions = () => {
+    if (this.exceptions === undefined || this.exceptions.length === 0) return;
+
+
+    this.exception = this.exceptions[0];
+
+    this.exceptionsPrepareMap[this.exception.name]();
   }
 
   createContainers = () => {
@@ -241,13 +287,15 @@ class Calendar {
     this.calendar.innerHTML = `
         <div class="month-wrapper">
             <div class="month-header-wrapper">
-              <svg data-calendar-control="prev" class="calendar-arrow">
-                <use href="#ssn-icon-arrow-left"></use>
+              <svg data-calendar-control="prev" class="calendar-arrow"  viewBox="0 0 10 16" fill="none">
+                 <path d="M10 0.160001C7.66667 2.72 5.16667 7.04 4.33333 8C5.16667 8.96 7.66667 13.28 10 15.84L9.83333 16C7.5 13.44 0.333334 8.32 0 8C0.333334 7.68 7.5 2.56 9.83333 0L10 0.160001Z"
+        fill="currentColor"/>
               </svg>
               <h3 class="month-header"></h3>
     
-              <svg data-calendar-control="next" class="calendar-arrow">
-                <use href="#ssn-icon-arrow-right"></use>
+              <svg data-calendar-control="next" class="calendar-arrow" viewBox="0 0 6 10" fill="none">
+                <path xmlns="http://www.w3.org/2000/svg" d="M0 9.9C1.4 8.3 2.9 5.6 3.4 5C2.9 4.4 1.4 1.7 0 0.1L0.1 0C1.5 1.6 5.8 4.8 6 5C5.8 5.2 1.5 8.4 0.1 10L0 9.9Z"
+        fill="currentColor"/>
               </svg>
             </div>
             <div class="day-names-container"> ${dayNameElements}</div>
@@ -276,44 +324,12 @@ class Calendar {
     this.chosenTime = ref(null, {type: 'setter'});
   }
 
-  createCurrentDateState = () => {
-    const fullYear = this.startDate.getFullYear();
-    const month = this.startDate.getMonth();
-
-    this.currentDate = ref(new Date(fullYear, month));
-
-    this.currentDate.effect([
-      this.fillUpMonthHeaderEffect,
-      this.fillUpDaySlotElementsEffect,
-    ], {firstCall: false});
-
-    if (this.disableExpiredDates) {
-      this.currentDate.effect(this.setExpiredDatesEffect, {firstCall: false});
-    }
-
-    if (this.preventPastMonthNavigation) {
-      this.currentDate.effect(this.prevMonthButtonVisibilityControlEffect, {firstCall: false});
-    }
-
-    this.currentDate.effect([
-      this.setDayGridStylesEffect
-    ], {firstCall: false});
-  }
-
   createDaySelectionState = () => {
     this.daySelection = ref([]);
   }
 
   createTimeSelectionsState = () => {
     this.timeSelection = ref([]);
-  }
-
-  setEvents = () => {
-    this.prevMontButton = this.container.querySelector('[data-calendar-control="prev"]');
-    this.prevMontButton.addEventListener('click', this.setPrevMonth);
-
-    this.nextMontButton = this.container.querySelector('[data-calendar-control="next"]');
-    this.nextMontButton.addEventListener('click', this.setNextMonth);
   }
 
   fillUpDaySlotElementsEffect = () => {
@@ -336,7 +352,7 @@ class Calendar {
       }
       const gridDay = slotCount - foundFirstDayOfMonth + 1
       const localDate = new Date(fullYear, month, gridDay);
-      if ((foundFirstDayOfMonth || foundFirstDayOfMonth === 0) && lastDayOfMonth >= localDate.getTime()) {
+      if ((foundFirstDayOfMonth || foundFirstDayOfMonth === 0) && lastDayOfMonth >= localDate.getTime() || this.showOtherMonthsDays) {
         daySlot.textContent = localDate.getDate();
         daySlot.date = localDate;
       }
@@ -357,25 +373,7 @@ class Calendar {
       }
     }
 
-    if ( this.exception &&  this.postFillUpDayMap[this.exception.name]) this.postFillUpDayMap[this.exception.name]();
-  }
-
-  exceptionSlots = () => {
-    /*test*/
-    this.schedule[2025][5][28].length = 0;
-    /*test*/
-
-    this.daysSlotsElements.forEach((daySlot) => {
-      if (daySlot.date === null) return;
-
-      const fullYear = daySlot.date.getFullYear();
-      const month = daySlot.date.getMonth();
-      const day = daySlot.date.getDate() - 1;
-
-      if (this.schedule[fullYear][month][day].length === 0) {
-        daySlot.disable = true
-      }
-    })
+    if (this.exception && this.postFillUpDayMap[this.exception.name]) this.postFillUpDayMap[this.exception.name]();
   }
 
   fillUpMonthHeaderEffect = () => {
@@ -536,7 +534,7 @@ class Calendar {
     return false;
   }
 
-  dayRangeEffect = (value) => {
+  dayRangeEffect = () => {
     if (this.daySelection.value.length === 0) {
 
       this.daysSlotsElements.forEach((daySlot) => {
@@ -607,7 +605,7 @@ class Calendar {
       } else if (this.timeFormat === '12') {
         const ampm = (slotTimeHoursFormated / 12 | 0) > 0 ? 'PM' : 'AM';
 
-        timeSlot.textContent = `${slotTimeHoursFormated > 12 ? slotTimeHoursFormated % 12 : slotTimeHoursFormated }:${slotTimeMinFormated} ${ampm}`;
+        timeSlot.textContent = `${slotTimeHoursFormated > 12 ? slotTimeHoursFormated % 12 : slotTimeHoursFormated}:${slotTimeMinFormated} ${ampm}`;
       }
 
       timeSlot.time = slotTime;

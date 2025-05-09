@@ -1,1 +1,133 @@
 # Datepicker
+
+## Init
+
+#### Template 
+
+```HTML
+<div data-calendar> or <div class="ssn-calendar-container">
+```
+
+```ecmascript 6
+new Datepicker().init();
+
+new Datepicker({container: 'ssn-calendar-container' }).init();
+```
+
+## Options
+
+
+### container
+#### `selector | HTMLElement | null`
+Set datepicker container element.
+
+`default: document.querySelector('[data-calendar]')`
+
+### mode
+#### `'dateSingle' | 'dateRange' | 'timeSingle' | 'timeRange'`
+Choose picking mode and time picker availability.
+
+`default: dateSingle`
+
+### startDate
+#### `Date object, timestamp: Number, string: Date string`
+Set initial month and year of 
+
+`default: current client month`
+
+### timeGap
+#### `required {mode: 'timeSingle | timeRange}`
+Number seconds from 600 sec until 86_400 sec. 
+
+`default: false`
+
+### autoSelectFirstDate
+#### `boolean`
+For any mode type, choose the first available date slot.
+
+`default: false`
+
+### autoSelectFirstTime
+#### `boolean`
+For `{mode: 'timeSingle' | 'timeRange'}` choose first available time slot.
+
+`default: false`
+
+### preventPastMonthNavigation
+#### `boolean`
+Block navigation to the month less than the current month.
+
+`default: false`
+
+### disableExpiredDates
+#### `boolean`
+Disable all date slots being in the past of current day.
+
+`default: false`
+
+### showOtherMonthsDays
+#### `boolean`
+Let's datepicker to fill up the days of previous and next month.
+
+`default: false`
+
+
+### localization
+#### `Object`
+
+```ecmascript 6
+{
+ dayOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+ monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+}
+```
+Override default datepicker localization.
+Day of weeks name and month names must be the same as above.
+Notice! Datepicker don't support RTL. 
+
+### timeFormat
+#### `required: timesingle | timeRange`
+#### `12 | 24`
+Set time slots time format.
+
+`default: 24`
+
+
+### tz
+#### `number in range -12 - 12 `
+Used to transform dates from external sources and for external sources.
+
+`default: 0`
+
+
+
+##  Exceptions
+Group of filters to control availability day and time slots.
+The exceptions are not work together the only one can be applied at once. Current exception type has chosen by first element of `exceptions: []`.
+
+### HEXSlots exception
+#### `reqired: timeGap != null`
+```ecmascript 6
+exceptions: [
+    {
+      name: 'HEXSlots',
+      list: "89090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909",
+      from: 1745366400,
+      to: 1753218000
+    }
+]
+```
+HEXSlots exception takes from-to range for dates availability control. The `list` parameter is the HEXa decimal representation of continuous time slots in order `from + timeGap * currentSlot`. 
+
+### generalSchedule
+#### `required: timeSingle | timeRange`
+```ecmascript 6
+exceptions: [
+    {
+      name: 'generalSchedule',
+      from: '08:00',
+      to: '24:00',
+    }
+]
+```
+Set the general available time range. 
