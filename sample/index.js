@@ -10,14 +10,12 @@ const calendarInstance = new Datepicker({
       name: 'HEXSlots',
       list: "89090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909",
       from: 1745366400,
-      to: 1753218000,
-      prefer: true
+      to: 1753218000
     },
     {
       name: 'generalSchedule',
       from: '08:00',
-      to: '24:00',
-      prefer: false
+      to: '24:00'
     }
   ],
   // autoSelectFirstDate: true, // true, false:def

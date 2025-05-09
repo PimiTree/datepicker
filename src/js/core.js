@@ -172,9 +172,12 @@ class Datepicker {
 
   postFillUpDayMap = {
     HEXSlots: () => {
+
       /*test*/
-      this.schedule[2025][5][28].length = 0;
+      this.schedule[2025][5][14].length = 0;
       /*test*/
+
+
 
       this.daysSlotsElements.forEach((daySlot) => {
         if (daySlot.date === null) return;
@@ -194,7 +197,7 @@ class Datepicker {
 
     this.container.classList.add('ssn-calendar-container');
 
-    // this.setExceptions();
+    this.setExceptions();
 
     this.createCalendar();
     this.setEvents();
@@ -257,15 +260,9 @@ class Datepicker {
     if (this.exceptions === undefined || this.exceptions.length === 0) return;
 
 
-    for (let i = 0; i < this.exceptions.length; i++) {
-      if (this.exceptions[i].prefer) {
-        this.exception = this.exceptions[i];
+    this.exception = this.exceptions[0];
 
-        this.exceptionsPrepareMap[this.exception.name]();
-
-        return;
-      }
-    }
+    this.exceptionsPrepareMap[this.exception.name]();
   }
 
   createContainers = () => {
