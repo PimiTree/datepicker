@@ -1,0 +1,39 @@
+:root {
+  --datepicker-palette-1: #111111;
+  --datepicker-palette-2: #fff;
+  --datepicker-palette-3: #FAA632;
+  --datepicker-palette-4: #2F2F2F;
+  --datepicker-palette-5: #FFBE64;
+  --datepicker-palette-6: #DDDDDD;
+  --datepicker-palette-7: #3F3D3D;
+  --datepicker-palette-8: rgba(47, 47, 47, 0.40);
+  --datepicker-palette-9: #F2F3F7;
+  --datepicker-palette-10: #ffbe64c7;
+  --datepicker-palette-11: rgba(248, 213, 169, 0.78);
+}
+
+:root {
+  /* std */
+  --datepicker-hover-transition: 0.3s ease;
+  --datepicker-border-radius: 4px;
+  --datepicker-cell-in-row: 7;
+
+  --datepicker-main-text-color: var(--datepicker-palette-1);
+  --datepicker-contrast-text-color: var(--datepicker-palette-2);
+
+  --datepicker-global-color: var(--datepicker-palette-3);
+  --datepicker-global-hover-color: var(--datepicker-palette-5);
+  --datepicker-global-dark-color: var(--datepicker-palette-1);
+  --datepicker-global-dark-hover-color: var(--datepicker-palette-4);
+
+  --datepicker-std-borders-color: var(--datepicker-palette-6);
+  --datipicker-std-border: 1px solid var(--datepicker-std-borders-color);
+
+  --datepicker-another-month-day-bg-color: var(--datepicker-palette-9);
+  --datepicker-selected-in-range-day-bg-color: var(--datepicker-palette-10);
+  --datepicker-border-time-right-color: var(--datepicker-palette-8);
+  --datepicker-selected-bg-color: var(--datepicker-palette-3);
+  --datepicker-selected-in-range-another-month-bg-color: var(--datepicker-palette-11);
+
+}
+

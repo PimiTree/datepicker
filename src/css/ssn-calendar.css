@@ -1,0 +1,194 @@
+.ssn-calendar-container {
+  container-type: inline-size;
+  container-name: ssn-calendar;
+  width: 100%;
+}
+
+.ssn-calendar {
+  display: flex;
+  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+}
+
+.ssn-calendar .month-wrapper {
+  padding: 14px;
+  max-width: 390px;
+  width: 100%;
+  height: max-content;
+  border-radius: var(--datepicker-border-radius);
+  border: var(--datipicker-std-border);
+}
+
+.ssn-calendar .time-container {
+  padding: 12px;
+  width: 100%;
+  max-width: 390px;
+  border-radius: var(--datepicker-border-radius);
+}
+
+.ssn-calendar .month-header-wrapper {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 18px;
+}
+
+.ssn-calendar .month-header {
+  display: inline-block;
+  font-size: 18px;
+  text-align: center;
+  user-select: none;
+  line-height: 30px;
+}
+
+.ssn-calendar .calendar-arrow {
+  width: 10px;
+  aspect-ratio: 0.625;
+  cursor: pointer;
+}
+
+.ssn-calendar .calendar-arrow.disable {
+  visibility: hidden;
+}
+
+.ssn-calendar .day-names-container,
+.ssn-calendar .days-container {
+  display: grid;
+  grid-template-columns: repeat(var(--datepicker-cell-in-row), 1fr);
+
+}
+
+.ssn-calendar .month-wrapper .day,
+.ssn-calendar .month-wrapper .day-name,
+.ssn-calendar .time-container .time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  font-size: 16px;
+  border: 1px solid transparent;
+  transition: color var(--datepicker-hover-transition), background-color var(--datepicker-hover-transition);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ssn-calendar .month-wrapper .day-name {
+  cursor: unset;
+}
+
+.ssn-calendar .time-container .time {
+  border: var(--datipicker-std-border);
+  border-radius: var(--datepicker-border-radius);
+  aspect-ratio: 4 / 1;
+}
+
+.ssn-calendar .time-container .time.border-time {
+  border-right-width: 4px;
+  border-right-color: var(--datepicker-border-time-right-color);
+  transition: color var(--datepicker-hover-transition), background-color var(--datepicker-hover-transition), border-color var(--datepicker-hover-transition);
+}
+.ssn-calendar .time-container .time.border-time.selected {
+  --datepicker-border-time-right-color: var(--datepicker-palette-7);
+}
+
+.ssn-calendar .month-wrapper .day.another-month,
+.ssn-calendar .time-container .time.another-month {
+  background-color: var(--datepicker-another-month-day-bg-color);
+}
+
+.ssn-calendar .month-wrapper .day.disable {
+  pointer-events: none;
+  background-color: var(--datepicker-another-month-day-bg-color);
+  opacity: .3;
+}
+
+.ssn-calendar .month-wrapper .day.selected,
+.ssn-calendar .time-container .time.selected {
+  color: var(--datepicker-contrast-text-color);
+  background-color: var(--datepicker-global-color);
+}
+
+.ssn-calendar .month-wrapper .day.selected-in-range,
+.ssn-calendar .time-container .time.selected-in-range{
+  color: var(--datepicker-contrast-text-color);
+  background-color: var(--datepicker-selected-in-range-day-bg-color);
+}
+
+.ssn-calendar .month-wrapper .day.selected-in-range.another-month {
+  background-color: var(--datepicker-selected-in-range-another-month-bg-color);
+}
+
+.ssn-calendar .month-wrapper .day:not(.prev-month, .another-month, .next-month):hover,
+.ssn-calendar .time-container .time:not(.prev-month, .another-month, .next-month, .border-time):hover{
+  color: var(--datepicker-contrast-text-color);
+  background-color: var(--datepicker-selected-in-range-day-bg-color);
+}
+
+.ssn-calendar .month-wrapper .day:not(.disable):hover,
+.ssn-calendar .time-container .time:not(.disable):hover{
+  color: var(--datepicker-contrast-text-color);
+  background-color: var(--datepicker-selected-in-range-day-bg-color);
+}
+
+.ssn-calendar .time-container .time.border-time:hover {
+  --datepicker-border-time-right-color: var(--datepicker-palette-7);
+  color: var(--datepicker-contrast-text-color);
+  background-color: var(--datepicker-selected-in-range-day-bg-color);
+}
+
+.ssn-calendar .month-wrapper .day.selected-in-range:hover,
+.ssn-calendar .time-container .time.selected-in-range:hover {
+  color: var(--datepicker-contrast-text-color);
+  background-color: var(--datepicker-global-color);
+}
+
+.ssn-calendar .time-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) ;
+  justify-content: space-between;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 319px;
+}
+
+.ssn-calendar .time-container.hide {
+  display: none;
+}
+
+
+@container ssn-calendar (width > 550px) {
+  .ssn-calendar {
+    flex-direction: row;
+    max-width: unset;
+    justify-content: center;
+  }
+
+  .ssn-calendar .month-wrapper {
+    width: 100%;
+  }
+
+  .ssn-calendar .time-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-auto-rows: min-content;
+    gap: 12px;
+    height: 100%;
+
+    width: 100%;
+  }
+
+  .ssn-calendar .time-container .time {
+    margin-top: 0;
+    width: 80px;
+    justify-self: center;
+  }
+}
+
+
+
+
