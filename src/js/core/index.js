@@ -1,3 +1,5 @@
+// Created by PimiTree https://github.com/PimiTree/datepicker
+
 import {
   ref
 } from "../reactivity"
@@ -37,32 +39,29 @@ export class DatepickerCore {
                 ? document.querySelector(props.container)
                 : props.container;
 
-    this.startDate = typeof props.startDate === 'string' || typeof props.startDate === 'number'
-        ? new Date(props.startDate)
-        : typeof props.startDate === 'object' && props.startDate instanceof Date
-            ? props.startDate
-            : this.clientStartDate;
+    this.startDate =
+        typeof props.startDate === 'string' || typeof props.startDate === 'number'
+            ? new Date(props.startDate)
+            : typeof props.startDate === 'object' && props.startDate instanceof Date
+                ? props.startDate
+                : this.clientStartDate;
 
-    this.autoSelectFirstDate = props.autoSelectFirstDate != null
-        ? props.autoSelectFirstDate
-        : false;
+    this.showOtherMonthsDays =
+        props.showOtherMonthsDays != null
+            ? props.showOtherMonthsDays
+            : true;
 
-    this.autoSelectFirstTime = props.autoSelectFirstTime != null
-        ? props.autoSelectFirstTime
-        : false;
+    this.timeFormat =
+        props.timeFormat === '12' || props.timeFormat === '12'
+            ? props.timeFormat
+            : '24';
 
-    this.showOtherMonthsDays = props.showOtherMonthsDays != null
-        ? props.showOtherMonthsDays
-        : true;
 
     this.localization = props.localization;
-
-    this.tz = props.tz || 0;
-
-    this.timeFormat = props.timeFormat || '24';
-
     this.preventPastMonthNavigation = props.preventPastMonthNavigation;
     this.disableExpiredDates = props.disableExpiredDates;
+
+    this.tz = props.tz || 0;
 
     this.firstStartDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth());
 
@@ -72,10 +71,7 @@ export class DatepickerCore {
     this.beforeInitSchelude = [];
     this.afterInitSchelude = [];
     this.afterFillUpDaySlotElementsSchedule = [];
-
-    console.log(this);
   }
-
 
   init = () => {
 
@@ -288,7 +284,7 @@ export class DatepickerCore {
       }
     }
 
-    // live circle hook
+    // life cycle pool call
     this.afterFillUpDaySlotElementsSchedule.length > 0 && this.afterFillUpDaySlot();
   }
 
@@ -334,12 +330,11 @@ export class DatepickerCore {
   }
 
   afterFillUpDaySlot = () => {
-    console.log('afterFillUpDaySlotElementsSchedule');
-
     this.afterFillUpDaySlotElementsSchedule.forEach((hook) => {
       hook(this);
     })
   }
+
   /*Hooks end*/
 
 

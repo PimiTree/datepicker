@@ -1,3 +1,5 @@
+// Created by PimiTree https://github.com/PimiTree/datepicker
+
 export function datepickerExceptionsPatch(props) {
 
   this.exceptions = props.exceptions;
@@ -12,7 +14,6 @@ export function datepickerExceptionsPatch(props) {
 
     if (this.exception.name === 'HEXSlots') {
       this.HEXSlots = () => {
-        console.log(this);
         /*test*/
         this.schedule[2025][4][13].length = 0;
         /*test*/
@@ -125,7 +126,7 @@ export function datepickerExceptionsPatch(props) {
   }
   /*Exception END*/
 
-  // add actions to live-circle hook
+  // add actions to life cycle pool
   this.beforeInitSchelude.push(this.setExceptions);
 
 

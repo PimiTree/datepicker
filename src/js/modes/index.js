@@ -1,3 +1,5 @@
+// Created by PimiTree https://github.com/PimiTree/datepicker
+
 import {
   ref
 } from "../reactivity";
@@ -15,10 +17,12 @@ export function datepickerModesPatch(props) {
           ? props.timeGap * this.MS_IN_SEC
           : false;
 
-  console.log(this.mode);
-
   /* Date modes */
   this.setDateMode = (handler, viewEffect) => {
+    this.autoSelectFirstDate = props.autoSelectFirstDate != null
+        ? props.autoSelectFirstDate
+        : false;
+
     this.daySlotsContainer.addEventListener('click', handler);
 
     this.currentMonthDate.effect(viewEffect, {firstCall: false});
@@ -125,8 +129,6 @@ export function datepickerModesPatch(props) {
     }
   }
   this.isDayRangeWithGaps = () => {
-    console.log('Check day gaps');
-
     const startDate = this.daySelection.value[0];
     const startYear = startDate.getFullYear();
     const startMonth = startDate.getMonth();
@@ -161,6 +163,10 @@ export function datepickerModesPatch(props) {
 
   /* Time modes */
   this.setTimeMode = (timeEffect, selectionEffects, timeHandler) => {
+    this.autoSelectFirstTime = props.autoSelectFirstTime != null
+        ? props.autoSelectFirstTime
+        : false;
+
     this.chosenTime = ref(null, {type: 'setter'});
 
     this.modeMap.dateSingle();

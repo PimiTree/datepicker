@@ -9,7 +9,7 @@ const a = performance.now();
 
 const calendarInstance = new DatePicker({
   // container: '[data-calendar]',  // document.querySelector('[data-calendar]'):def
-  mode: 'timeSingle', // dateSingle:def, dateRange, timeSingle, timeRange, dateRangeTimeStartEnd
+  mode: 'timeRange', // dateSingle:def, dateRange, timeSingle, timeRange, dateRangeTimeStartEnd
   // startDate: null,  // new Date(), timestamp, todayStart:def (ok)
   timeGap: 3600, // seconds between time slots
   exceptions: [
