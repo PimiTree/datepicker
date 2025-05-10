@@ -25,16 +25,17 @@ const calendarInstance = new DatePicker({
       to: '10:00'
     },
   ],
-  // autoSelectFirstDate: true, // true, false:def
-  // autoSelectFirstTime: true, // true, false:def <=> mode:timeSingle, timeRange
-  // preventPastMonthNavigation: true, // true, false:def (ok)
-  // disableExpiredDates: true, // true, false:def (ok)
-  // tz: 0,
-  // showOtherMonthsDays: false, // false, true:def (ok)
- /* localization: {
+  autoSelectFirstDate: true, // true, false:def
+  autoSelectFirstTime: true, // true, false:def <=> mode:timeSingle, timeRange
+  preventPastMonthNavigation: true, // true, false:def (ok)
+  disableExpiredDates: false, // true, false:def (ok)
+  tz: 0, // number in range -12 - 12 (ok)
+  showOtherMonthsDays: true, // false, true:def (ok)
+  localization: {
     dayOfWeek: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-  }, (ok) */
-  // timeFormat: '12' // '12', '24':def (ok)
+  },  // (ok)
+  timeFormat: '12', // '12', '24':def (ok)
+  mondayIsFirstDayOfWeek: false // true, false
 });
 
 document.body.insertAdjacentHTML('beforeend', `<div>${(performance.now() - a).toFixed(2)} ms </div>`)

@@ -60,6 +60,7 @@ export class DatepickerCore {
     this.localization = props.localization;
     this.preventPastMonthNavigation = props.preventPastMonthNavigation;
     this.disableExpiredDates = props.disableExpiredDates;
+    this.mondayIsFirstDayOfWeek = props.mondayIsFirstDayOfWeek;
 
     this.tz = props.tz || 0;
 

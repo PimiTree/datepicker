@@ -83,7 +83,7 @@ Set time slots time format.
 `default: 24`
 
 
-### tz `number in range -12 - 12 `
+### tz `number in range -12 - 12`
 Used to transform dates from external sources and for external sources.
 
 `default: 0`
@@ -138,7 +138,9 @@ Set the general available time range.
 
 
 ## Soon:
-1.  `autoSelectFirstDate`
-2.  `autoSelectFirstTime`
-3. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default.
+1.  Option: `autoSelectFirstDate` boolean, core
+2.  Option: `autoSelectFirstTime` boolean, core
+3. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default, core
 4. The Exception `name: HEXSlots` responsibility have to be only in date range from-to. Not apply disability to days-times slots elements in out of range.
+5. Shift fill up day slots elements down if first day of month 0
+6. Option: `mondayIsFirstDayOfWeek` boolean, core
