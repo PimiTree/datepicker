@@ -142,7 +142,7 @@ const createShallowProxyRef = (value) => {
  * @returns {RefObject} A reactive reference object with various utility methods
  *
  */
-const ref = (value, options) => {
+export const ref = (value, options) => {
 
   /**
    * The reference object to be returned

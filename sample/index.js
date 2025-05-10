@@ -1,8 +1,15 @@
-// const a = performance.now();
+import {
+  DatepickerCore
+} from "../src/js/core";
+import {
+  DatePicker
+} from "../src/js";
 
-const calendarInstance = new Datepicker({
+const a = performance.now();
+
+const calendarInstance = new DatePicker({
   // container: '[data-calendar]',  // document.querySelector('[data-calendar]'):def
-  mode: 'timeRange', // dateSingle:def, dateRange, timeSingle, timeRange, dateRangeTimeStartEnd
+  mode: 'timeSingle', // dateSingle:def, dateRange, timeSingle, timeRange, dateRangeTimeStartEnd
   // startDate: null,  // new Date(), timestamp, todayStart:def (ok)
   timeGap: 3600, // seconds between time slots
   exceptions: [
@@ -14,20 +21,20 @@ const calendarInstance = new Datepicker({
     },
     {
       name: 'generalSchedule',
-      from: '08:00',
-      to: '24:00'
-    }
+      from: '01:00',
+      to: '10:00'
+    },
   ],
   // autoSelectFirstDate: true, // true, false:def
   // autoSelectFirstTime: true, // true, false:def <=> mode:timeSingle, timeRange
   // preventPastMonthNavigation: true, // true, false:def (ok)
   // disableExpiredDates: true, // true, false:def (ok)
   // tz: 0,
-  // showOtherMonthsDays: false, // false, true:def
+  // showOtherMonthsDays: false, // false, true:def (ok)
  /* localization: {
     dayOfWeek: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-  },*/
-  // timeFormat: '12' // '12', '24':def
-}).init();
+  }, (ok) */
+  // timeFormat: '12' // '12', '24':def (ok)
+});
 
-// document.body.insertAdjacentHTML('beforeend', `<div>${performance.now() - a}</div>`)
+document.body.insertAdjacentHTML('beforeend', `<div>${(performance.now() - a).toFixed(2)} ms </div>`)

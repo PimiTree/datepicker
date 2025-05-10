@@ -9,9 +9,9 @@
 ```
 
 ```ecmascript 6
-new Datepicker().init();
+new DatepickerCore().init();
 
-new Datepicker({container: 'ssn-calendar-container' }).init();
+new DatepickerCore({container: 'ssn-calendar-container'}).init();
 ```
 
 ## Options
@@ -131,3 +131,10 @@ exceptions: [
 ]
 ```
 Set the general available time range. 
+
+
+## Soon:
+1.  `autoSelectFirstDate`
+2.  `autoSelectFirstTime`
+3. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default.
+4. The Exception `name: HEXSlots` responsibility have to be only in date range from-to. Not apply disability to days-times slots elements in out of range.
