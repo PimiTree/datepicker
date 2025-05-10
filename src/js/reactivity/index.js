@@ -1,3 +1,5 @@
+// Created by PimiTree https://github.com/PimiTree/js-reactivity
+
 /**
  * @typedef {function} EffectCallback
  * @param {any} value - The current value of the reference
@@ -142,7 +144,7 @@ const createShallowProxyRef = (value) => {
  * @returns {RefObject} A reactive reference object with various utility methods
  *
  */
-const ref = (value, options) => {
+export const ref = (value, options) => {
 
   /**
    * The reference object to be returned
