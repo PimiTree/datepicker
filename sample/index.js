@@ -1,9 +1,6 @@
 import {
-  DatepickerCore
-} from "../src/js/core";
-import {
   DatePicker
-} from "../src/js";
+} from "../src/js/index.js";
 
 const a = performance.now();
 

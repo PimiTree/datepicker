@@ -88,6 +88,13 @@ Used to transform dates from external sources and for external sources.
 
 `default: 0`
 
+## Methods
+
+### Loader `function`
+- `setLoading`
+- `removeLoading`
+Append and remove loader with datepicker disabling. 
+
 ## Live cycle hook pools
 
 ### Core module:

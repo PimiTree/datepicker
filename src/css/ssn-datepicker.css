@@ -1,6 +1,7 @@
 .ssn-calendar-container {
   container-type: inline-size;
   container-name: ssn-calendar;
+  position: relative;
   width: 100%;
 }
 

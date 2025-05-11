@@ -17,6 +17,10 @@ Hooks pools:
 - `afterInitLifecyclePool`
 - `afterFillUpDaySlotElementsLifecyclePool`
 
+Loader functions: 
+ - `setLoading`
+ - `removeLoading`
+
 Elements pool:
  - `daysSlotsElements`
  - `timeSlotsElements`

@@ -2,7 +2,7 @@
 
 import {
   ref
-} from "../reactivity";
+} from "../reactivity/index.js";
 
 export function datepickerModesPatch(props) {
 

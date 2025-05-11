@@ -1,8 +1,6 @@
 // Created by PimiTree https://github.com/PimiTree/datepicker
 
 export function datepickerExceptionsPatch(props) {
-  console.log(this);
-
   this.exceptions = props.exceptions;
 
   this.setExceptions = () => {
@@ -74,8 +72,6 @@ export function datepickerExceptionsPatch(props) {
       }
 
       this.extendHEXSlotsData = (data) => {
-        console.log('extend');
-
         this.timeGap = data.duration * 1000;
         data.from *= 1000;
         data.to *= 1000;
