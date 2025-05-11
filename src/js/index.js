@@ -1,12 +1,12 @@
 import {
   DatepickerCore
-} from "./core";
+} from "./core/index.js";
 import {
   datepickerModesPatch
-} from "./modes";
+} from "./modes/index.js";
 import {
   datepickerExceptionsPatch
-} from "./exeption";
+} from "./exeption/index.js";
 
 export class DatePicker {
   constructor(props) {

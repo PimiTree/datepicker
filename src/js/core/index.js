@@ -2,7 +2,7 @@
 
 import {
   ref
-} from "../reactivity"
+} from "../reactivity/index.js"
 
 
 export class DatepickerCore {
@@ -315,6 +315,26 @@ export class DatepickerCore {
     const offsetDifference = ((toTimezoneOffset * 60) + fromTimezoneOffset) * 60 * 1000;
 
     return timestamp - (reverse ? -offsetDifference : offsetDifference);
+  }
+
+  setLoading = () => {
+    this.timeContainer.classList.add('disabled');
+    this.calendar.classList.add('disabled');
+
+    if (this.loader === undefined) {
+      this.loader = document.createElement('div');
+      this.loader.classList.add('datepicker-loader');
+      this.loader.innerHTML = '<div></div>';
+
+    }
+
+    this.container.append(this.loader);
+  }
+
+  removeLoading = () => {
+    this.loader.remove();
+    this.timeContainer.classList.remove('disabled');
+    this.calendar.classList.remove('disabled');
   }
 
   /*Hooks*/
