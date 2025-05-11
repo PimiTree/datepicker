@@ -17,55 +17,76 @@ new Datepicker({container: 'ssn-calendar-container'});
 ## Options
 
 
-### container `selector | HTMLElement | null`
+### container 
+`selector | HTMLElement | null`
+
 Set datepicker container element.
 
 `default: document.querySelector('[data-datepicker]')`
 
-### mode `'dateSingle' | 'dateRange' | 'timeSingle' | 'timeRange'`
+### mode 
+`'dateSingle' | 'dateRange' | 'timeSingle' | 'timeRange'`
+
 Choose picking mode and time picker availability.
 
 `default: dateSingle`
 
-### startDate `Date object, timestamp: Number, string: Date string`
+### startDate
+`Date object, timestamp: Number, string: Date string`
+
 Set initial month and year of 
 
 `default: current client month`
 
-### timeGap `int`
+### timeGap
+`int`
+
 `required mode: 'timeSingle' | 'timeRange` 
+
 Number seconds from 600 sec until 86_400 sec. 
 
 `default: false`
 
-### autoSelectFirstDate `boolean`
+### autoSelectFirstDate 
+`boolean`
+
 For any mode type, choose the first available date slot.
 
 `default: false`
 
-### autoSelectFirstTime `boolean`
+### autoSelectFirstTime 
+`boolean`
+
 `required mode: 'timeSingle' | 'timeRange`
+
 Choose first available time slot.
 
 `default: false`
 
-### preventPastMonthNavigation `boolean`
+### preventPastMonthNavigation 
+`boolean`
+
 Block navigation to the month less than the current month.
 
 `default: false`
 
-### disableExpiredDates `boolean`
+### disableExpiredDates 
+`boolean`
+
 Disable all date slots being in the past of current day.
 
 `default: false`
 
-### showOtherMonthsDays `boolean`
+### showOtherMonthsDays 
+`boolean`
+
 Let's datepicker to fill up the days of previous and next month.
 
 `default: false`
 
 
-### localization `Object`
+### localization 
+`Object`
 ```ecmascript 6
 new Datepicker({
  dayOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
@@ -76,21 +97,27 @@ Override default datepicker localization.
 Day of weeks name and month names must be the same as above.
 Notice! Datepicker don't support RTL. 
 
-### timeFormat `12 | 24`
-#### `required mode: 'timesingle' | 'timeRange'`
+### timeFormat
+`12 | 24`
+
+`required mode: 'timesingle' | 'timeRange'`
+
 Set time slots time format.
 
 `default: 24`
 
 
-### tz `number in range -12 - 12`
+### tz 
+`number in range -12 - 12`
+
 Used to transform dates from external sources and for external sources.
 
 `default: 0`
 
 ## Methods
 
-### Loader `function`
+### Loader 
+`function`
 - `setLoading`
 - `removeLoading`
 Append and remove loader with datepicker disabling. 
@@ -134,8 +161,10 @@ exceptions: [
 ```
 HEXSlots exception takes from-to range for dates availability control. The `list` parameter is the HEXa decimal representation of continuous time slots in order `from + timeGap * currentSlot`. 
 
-### generalSchedule `object`
-#### `required mode: timeSingle | timeRange`
+### generalSchedule 
+`object`
+ 
+`required mode: timeSingle | timeRange`
 ```ecmascript 6
 exceptions: [
     {
@@ -154,3 +183,4 @@ Set the general available time range.
 3. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default, core
 4. Shift fill up day slots elements down if first day of month 0
 5. Option: `mondayIsFirstDayOfWeek` boolean, core
+6. `disableExpiredDates` must effect on the 
