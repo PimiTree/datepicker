@@ -23,7 +23,7 @@
 }
 
 .ssn-calendar .time-container {
-  padding: 12px;
+  scroll-snap-type: y mandatory;
   width: 100%;
   max-width: 390px;
   border-radius: var(--datepicker-border-radius);
@@ -79,12 +79,17 @@
 
 .ssn-calendar .month-wrapper .day-name {
   cursor: unset;
+  font-size: 14px;
 }
 
 .ssn-calendar .time-container .time {
+  scroll-snap-align: start;
+  padding-block: 4px;
   border: var(--datipicker-std-border);
   border-radius: var(--datepicker-border-radius);
   aspect-ratio: 4 / 1;
+  font-size: 15px;
+  line-height: 15px;
 }
 
 .ssn-calendar .time-container .time.border-time {
@@ -151,9 +156,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) ;
   justify-content: space-between;
-  gap: 16px;
+  gap: 13px;
   overflow-y: auto;
-  max-height: 319px;
+  max-height: 320px;
 }
 
 .ssn-calendar .time-container.hide {
@@ -166,6 +171,7 @@
     flex-direction: row;
     max-width: unset;
     justify-content: center;
+    align-items: start;
   }
 
   .ssn-calendar .month-wrapper {

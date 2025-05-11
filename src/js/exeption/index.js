@@ -1,22 +1,21 @@
 // Created by PimiTree https://github.com/PimiTree/datepicker
 
 export function datepickerExceptionsPatch(props) {
+  console.log(this);
+
 
   this.exceptions = props.exceptions;
 
-
-
-  /*Exception*/
   this.setExceptions = () => {
     this.exception = this.exceptions[0];
 
     this.exceptionsPrepareMap[this.exception.name]();
 
     if (this.exception.name === 'HEXSlots') {
+      this.exception.from *= 1000;
+      this.exception.to *= 1000;
+
       this.HEXSlots = () => {
-        /*test*/
-        this.schedule[2025][4][13].length = 0;
-        /*test*/
 
 
         this.daysSlotsElements.forEach((daySlot) => {
@@ -24,15 +23,75 @@ export function datepickerExceptionsPatch(props) {
 
           const fullYear = daySlot.date.getFullYear();
           const month = daySlot.date.getMonth();
-          const day = daySlot.date.getDate() - 1;
+          const day = daySlot.date.getDate();
 
-          if (this.schedule[fullYear][month][day].length === 0) {
+          if (
+              this.schedule[fullYear] === undefined
+              || this.schedule[fullYear][month] === undefined
+              || this.schedule[fullYear][month][day] === undefined
+              || this.schedule[fullYear][month][day].length === 0
+          ) {
             daySlot.disable = true
           }
         })
       }
-      this.afterFillUpDaySlotElementsSchedule.push(this.HEXSlots);
+
+      // add actions to life cycle pool
+      this.afterFillUpDaySlotElementsLifecyclePool.push(this.HEXSlots);
+      this.beforeTimeSlotRenderInitPool.push(() => {
+        this.__allowTimeSlotsRenderAtStart = false;
+      });
+
+
+      this.afterInitLifecyclePool.push(() => {
+        this.daySelection.effect([
+          this.createHEXSlotsTimeElements,
+          () => { this.timeSelection.value.length = 0}
+        ]);
+      });
+
     }
+
+    if (this.exception.name === 'generalSchedule') {
+      // add actions to life cycle pool
+      this.beforeTimeSlotsRenderPool.push(() => {
+        this.timeSlotsinitTime = this.generalSchedule.from;
+        this.commonTimeSlotCount = (this.generalSchedule.to - this.generalSchedule.from) / this.timeGap;
+      });
+    }
+  }
+
+  this.createHEXSlotsTimeElements = () => {
+    this.timeSlotsElements = [];
+    this.timeContainer.innerHTML = '';
+
+    if (this.daySelection.value.length !== 1) return;
+
+    const localDate = this.daySelection.value[0];
+    const localYear = localDate.getFullYear();
+    const localMonth = localDate.getMonth();
+    const localDay = localDate.getDate();
+    const localDayStartTS = new Date(localYear, localMonth, localDay).getTime();
+
+    this.schedule[localYear][localMonth][localDay].forEach((timeSlot, slotCount, slots) => {
+      const timeSlotElement = document.createElement('div');
+      timeSlotElement.classList.add('time');
+      if (timeSlot.disable) {
+        timeSlotElement.classList.add('disabled');
+      }
+
+      const fromSLotsTime = timeSlot.date.getTime();
+
+
+      const slotTime = fromSLotsTime - localDayStartTS;
+      timeSlotElement.textContent = this.MSToFormatedAmPmTime(slotTime);
+
+      timeSlotElement.time = slotTime;
+      timeSlotElement.disable = timeSlot.disable;
+
+      this.timeContainer.append(timeSlotElement);
+      this.timeSlotsElements.push(timeSlotElement);
+    })
   }
 
   this.exceptionsPrepareMap = {
@@ -40,6 +99,7 @@ export function datepickerExceptionsPatch(props) {
       this.schedule = {};
 
       this.processHEXtoBinSlotExceptions(this.exception);
+      this.prepareYearStructure();
       this.prepareSchedule();
     },
     generalSchedule: () => {
@@ -82,30 +142,38 @@ export function datepickerExceptionsPatch(props) {
         .split('')
         .map(a => +a));
 
-    if (this.slotsFrom === undefined) {
-      this.slotsFrom = new Date(this.processDateFromServer(slots.from));
+    if (this.slotFrom === undefined) {
+      this.slotFrom = new Date(this.processDateFromServer(slots.from));
     }
 
     this.slotTo = new Date(this.processDateFromServer(slots.to));
   }
 
   this.prepareYearStructure = () => {
-    const localYear = this.firstStartDate.getFullYear();
+    const fromYearSlots = this.slotFrom.getFullYear();
+    const fromMonthSlots = this.slotFrom.getMonth();
+    const fromDaySlots = this.slotFrom.getDate();
+    const fromTimestamp = this.slotFrom.getTime();
 
-    if (this.schedule[localYear] !== undefined) return;
+    const toTimestamp = this.slotTo.getTime();
 
-    this.schedule[localYear] = this.schedule[localYear] ?? Array.from({length: 12}, () => null);
+    const dayDifference = Math.ceil((toTimestamp - fromTimestamp) / this.MS_IN_DAY);
 
-    this.schedule[localYear] = this.schedule[localYear].map((month, i) => {
+    for (let day = 0; day < dayDifference; day++) {
+      const localDate = new Date(fromYearSlots, fromMonthSlots, fromDaySlots + day);
+      const localYear = localDate.getFullYear();
+      const localMonth = localDate.getMonth();
+      const localDay = localDate.getDate();
 
-      return Array.from({length: new Date(localYear, i + 1, 0).getDate()}, () => []);
-
-    })
+      if (this.schedule[localYear] === undefined) this.schedule[localYear] = {};
+      if (this.schedule[localYear][localMonth] === undefined) this.schedule[localYear][localMonth] = {};
+      if (this.schedule[localYear][localMonth][localDay] === undefined) this.schedule[localYear][localMonth][localDay] = [];
+    }
 
   }
 
   this.prepareSchedule = () => {
-    const slotsStartTime = this.slotsFrom.getTime();
+    const slotsStartTime = this.slotFrom.getTime();
 
     this.slots.forEach((slot, i) => {
 
@@ -113,25 +181,18 @@ export function datepickerExceptionsPatch(props) {
       const localDateFromObject = new Date(localFrom);
       const localCurrentYear = localDateFromObject.getFullYear();
       const localCurrentMonth = localDateFromObject.getMonth();
-      const localCurrentDate = localDateFromObject.getDate() - 1;
-
-      this.prepareYearStructure(localCurrentYear);
+      const localCurrentDate = localDateFromObject.getDate();
 
       this.schedule[localCurrentYear][localCurrentMonth][localCurrentDate].push({
-        from: localDateFromObject,
-        to: new Date(localFrom + this.timeGap),
-        active: !!slot
+        date: localDateFromObject,
+        disable: !slot
       });
     })
   }
-  /*Exception END*/
+
+
+
 
   // add actions to life cycle pool
-  this.beforeInitSchelude.push(this.setExceptions);
-
-
-
-
-
-
+  this.beforeInitLifecyclePool.push(this.setExceptions);
 }

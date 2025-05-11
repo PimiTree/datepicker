@@ -67,10 +67,10 @@ Let's datepicker to fill up the days of previous and next month.
 
 ### localization `Object`
 ```ecmascript 6
-{
+new Datepicker({
  dayOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
  monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-}
+})
 ```
 Override default datepicker localization.
 Day of weeks name and month names must be the same as above.
@@ -88,18 +88,22 @@ Used to transform dates from external sources and for external sources.
 
 `default: 0`
 
-## Live cycle hooks 
+## Live cycle hook pools
 
-### Hooks pools:
-- `beforeInitSchelude`
-- `afterInitSchelude`
-- `afterFillUpDaySlotElementsSchedule`
+### Core module:
+- `beforeInitLifecyclePool`
+- `afterInitLifecyclePool`
+- `afterFillUpDaySlotElementsLifecyclePool`
 
-Hook pool is just a plain array of functions called at certain time of Datepicker run phase.
+### Modes module: 
+- `beforeTimeSlotRenderInitPool`
+- `beforeTimeSlotsRenderPool` 
+
+Hook pool is just a plain array of functions called at a certain time of Datepicker run phase.
 
 #### Use hooks pools 
 ```ecmascript 6
-this.beforeInitSchelude.push((datepickerInstance) => {
+this.beforeInitLifecyclePool.push((datepickerInstance) => {
   console.log('Some action');
 })
 ```
@@ -138,9 +142,8 @@ Set the general available time range.
 
 
 ## Soon:
-1.  Option: `autoSelectFirstDate` boolean, core
-2.  Option: `autoSelectFirstTime` boolean, core
+1. Option: `autoSelectFirstDate` boolean, core
+2. Option: `autoSelectFirstTime` boolean, core
 3. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default, core
-4. The Exception `name: HEXSlots` responsibility have to be only in date range from-to. Not apply disability to days-times slots elements in out of range.
-5. Shift fill up day slots elements down if first day of month 0
-6. Option: `mondayIsFirstDayOfWeek` boolean, core
+4. Shift fill up day slots elements down if first day of month 0
+5. Option: `mondayIsFirstDayOfWeek` boolean, core
