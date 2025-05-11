@@ -13,9 +13,9 @@ Core options:
  - `tz`
 
 Hooks pools:
-- `beforeInitSchelude`
-- `afterInitSchelude`
-- `afterFillUpDaySlotElementsSchedule`
+- `beforeInitLifecyclePool`
+- `afterInitLifecyclePool`
+- `afterFillUpDaySlotElementsLifecyclePool`
 
 Elements pool:
  - `daysSlotsElements`

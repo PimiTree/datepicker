@@ -14,20 +14,21 @@ const calendarInstance = new DatePicker({
   timeGap: 3600, // seconds between time slots
   exceptions: [
     {
+      name: 'generalSchedule',
+      from: '01:00',
+      to: '10:00'
+    },
+    {
       name: 'HEXSlots',
       list: "89090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909",
       from: 1745366400,
       to: 1753218000
     },
-    {
-      name: 'generalSchedule',
-      from: '01:00',
-      to: '10:00'
-    },
+
   ],
   autoSelectFirstDate: true, // true, false:def
   autoSelectFirstTime: true, // true, false:def <=> mode:timeSingle, timeRange
-  preventPastMonthNavigation: true, // true, false:def (ok)
+  preventPastMonthNavigation: false, // true, false:def (ok)
   disableExpiredDates: false, // true, false:def (ok)
   tz: 0, // number in range -12 - 12 (ok)
   showOtherMonthsDays: true, // false, true:def (ok)

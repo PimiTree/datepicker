@@ -17,6 +17,8 @@ export function datepickerModesPatch(props) {
           ? props.timeGap * this.MS_IN_SEC
           : false;
 
+  this.__allowTimeSlotsRenderAtStart = true;
+
   /* Date modes */
   this.setDateMode = (handler, viewEffect) => {
     this.autoSelectFirstDate = props.autoSelectFirstDate != null
@@ -36,7 +38,7 @@ export function datepickerModesPatch(props) {
     if (daySlot.disable || daySlot === this.daySlotsContainer) return;
 
     if (daySlot.date.getTime() !== this.daySelection.value[0]?.getTime()) {
-      this.daySelection.value[0] = daySlot.date
+      this.daySelection.value[0] = daySlot.date;
     } else {
       this.daySelection.value.length = 0;
     }
@@ -139,9 +141,9 @@ export function datepickerModesPatch(props) {
     const endMonth = endDate.getMonth();
     const endDay = endDate.getDate() - 1;
 
-    const yearDeference = endYear - startYear;
+    const yearDifference = endYear - startYear;
 
-    for (let i = 0; i <= yearDeference; i++) {
+    for (let i = 0; i <= yearDifference; i++) {
 
       const initMonth = i + startYear === startYear ? startMonth : 0;
       const lastMonth = i + startYear === endYear ? endMonth : this.MONTH_IN_YEAR;
@@ -172,9 +174,12 @@ export function datepickerModesPatch(props) {
     this.modeMap.dateSingle();
     this.daySelection.effect(timeEffect, {firstCall: false});
 
-    this.setTimeSlotsCount();
+
     this.calendar.append(this.timeContainer);
-    this.createTimeSlotElements();
+
+    this.onBeforeTimeSlotRenderInit();
+    console.log(this.__allowTimeSlotsRenderAtStart);
+    this.__allowTimeSlotsRenderAtStart && this.createTimeSlotElements();
 
     this.timeSelection = ref([]);
     this.timeSelection.effect(selectionEffects, {firstCall: false});
@@ -204,15 +209,24 @@ export function datepickerModesPatch(props) {
 
     } else if (this.timeSelection.value.length === 1) {
 
-      const currentSelectionInitTime = this.timeSelection.value[0];
+      let currentSelectionInitTime = this.timeSelection.value[0];
+      let currentSelectionEndTime = 0;
 
       if (currentSelectionInitTime < timeSlot.time) {
-        this.timeSelection.value[1] = timeSlot.time;
+        currentSelectionEndTime = timeSlot.time;
       } else {
-
-        this.timeSelection.value[1] = this.timeSelection.value[0];
-        this.timeSelection.value[0] = timeSlot.time;
+        currentSelectionInitTime = timeSlot.time;
+        currentSelectionEndTime = this.timeSelection.value[0];
       }
+
+      if (this.timeSlotsElements.some((element) => element.time >= currentSelectionInitTime && element.time <= currentSelectionEndTime && element.disable)) {
+        this.timeSelection.value[0] = timeSlot.time;
+      } else {
+        this.timeSelection.value[0] = currentSelectionInitTime;
+        this.timeSelection.value[1] = currentSelectionEndTime;
+      }
+
+      console.log(this.timeSelection.value);
 
     } else if (this.timeSelection.value.length > 1) {
 
@@ -284,29 +298,20 @@ export function datepickerModesPatch(props) {
     this.timeSlotsElements.length = 0;
     this.timeContainer.innerHTML = '';
 
-    // generalSchedule exception
-    const initTime = this.exception?.name === 'generalSchedule' ? this.generalSchedule.from : 0;
+    this.timeSlotsinitTime = 0;
+    this.commonTimeSlotCount = this.MS_IN_DAY / this.timeGap;
+
+    // Life cycle hook
+    this.onBeforeTimeSlotsRender();
+
 
     for (let timeSlotCount = 0; timeSlotCount < this.commonTimeSlotCount; timeSlotCount++) {
       const timeSlot = document.createElement('div');
       timeSlot.classList.add('time');
 
-      const slotTime = initTime + timeSlotCount * this.timeGap;
-      const slotTimeTotalMin = slotTime / this.MS_IN_SEC / this.SEC_IN_MIN;
-      const slotTimeHours = slotTimeTotalMin / this.MIN_IN_HOUR | 0;
-      const slotTimeMin = slotTimeTotalMin % this.MIN_IN_HOUR | 0;
+      const slotTime = this.timeSlotsinitTime + timeSlotCount * this.timeGap;
 
-      const slotTimeHoursFormated = slotTimeHours.toString().padStart(2, '0');
-      const slotTimeMinFormated = slotTimeMin.toString().padStart(2, '0');
-
-      if (this.timeFormat === '24') {
-        timeSlot.textContent = `${slotTimeHoursFormated}:${slotTimeMinFormated}`;
-      } else if (this.timeFormat === '12') {
-        const ampm = (slotTimeHoursFormated / 12 | 0) > 0 ? 'PM' : 'AM';
-
-        timeSlot.textContent = `${slotTimeHoursFormated > 12 ? slotTimeHoursFormated % 12 : slotTimeHoursFormated}:${slotTimeMinFormated} ${ampm}`;
-      }
-
+      timeSlot.textContent = this.MSToFormatedAmPmTime(slotTime);
       timeSlot.time = slotTime;
       timeSlot.disable = false;
 
@@ -314,17 +319,49 @@ export function datepickerModesPatch(props) {
       this.timeSlotsElements.push(timeSlot);
     }
   }
-  this.setTimeSlotsCount = () => {
-    if (this.exception?.name === 'generalSchedule') {
-      this.commonTimeSlotCount = (this.generalSchedule.to - this.generalSchedule.from) / this.timeGap;
-    } else {
-      this.commonTimeSlotCount = this.MS_IN_DAY / this.timeGap;
+
+  this.MSToFormatedAmPmTime = (MS) => {
+    const minutes = MS / this.MS_IN_SEC / this.SEC_IN_MIN;
+    const hours = minutes / this.MIN_IN_HOUR | 0;
+    const lastHours = minutes % this.MIN_IN_HOUR | 0;
+
+    const hoursFormated = hours.toString().padStart(2, '0');
+    const minutesFormated = lastHours.toString().padStart(2, '0');
+
+    let finalTimeString = '';
+
+    if (this.timeFormat === '24') {
+      finalTimeString = `${hoursFormated}:${minutesFormated}`;
+    } else if (this.timeFormat === '12') {
+      const ampm = (hoursFormated / 12 | 0) > 0 ? 'PM' : 'AM';
+
+      finalTimeString = `${hoursFormated > 12 ? hoursFormated % 12 : hoursFormated}:${minutesFormated} ${ampm}`;
     }
+
+    return finalTimeString;
   }
+
   this.removeTimeContainer = () => {
     this.timeContainer.remove();
   }
   /* Time modes EMD*/
+
+  /*Hook pools */
+  this.beforeTimeSlotRenderInitPool = [];
+  this.onBeforeTimeSlotRenderInit = () => {
+    this.beforeTimeSlotRenderInitPool.forEach((hook) => {
+      hook(this);
+    })
+  }
+
+  this.beforeTimeSlotsRenderPool = [];
+  this.onBeforeTimeSlotsRender = () => {
+    this.beforeTimeSlotsRenderPool.forEach((hook) => {
+      hook(this);
+    })
+  }
+  /*Hook pools END*/
+
 
   this.modeMap = {
     dateSingle: () => {
@@ -355,5 +392,5 @@ export function datepickerModesPatch(props) {
     },
   }
 
-  this.afterInitSchelude.push(this.modeMap[this.mode]);
+  this.afterInitLifecyclePool.push(this.modeMap[this.mode]);
 }

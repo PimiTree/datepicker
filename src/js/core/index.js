@@ -69,14 +69,14 @@ export class DatepickerCore {
     this.daysSlotsElements = [];
     this.timeSlotsElements = [];
 
-    this.beforeInitSchelude = [];
-    this.afterInitSchelude = [];
-    this.afterFillUpDaySlotElementsSchedule = [];
+    this.beforeInitLifecyclePool = [];
+    this.afterInitLifecyclePool = [];
+    this.afterFillUpDaySlotElementsLifecyclePool = [];
   }
 
   init = () => {
 
-    this.beforeInitSchelude.length > 0 && this.beforeCoreInit()
+    this.beforeInitLifecyclePool.length > 0 && this.beforeCoreInit()
 
     /* Core init*/
     this.container.classList.add('ssn-calendar-container');
@@ -89,7 +89,7 @@ export class DatepickerCore {
     /* Core init END*/
 
 
-    this.afterInitSchelude.length > 0 && this.afterCoreInit();
+    this.afterInitLifecyclePool.length > 0 && this.afterCoreInit();
 
     return this;
   }
@@ -286,7 +286,7 @@ export class DatepickerCore {
     }
 
     // life cycle pool call
-    this.afterFillUpDaySlotElementsSchedule.length > 0 && this.afterFillUpDaySlot();
+    this.afterFillUpDaySlotElementsLifecyclePool.length > 0 && this.afterFillUpDaySlot();
   }
 
   prevMonthButtonVisibilityControlEffect = () => {
@@ -319,19 +319,19 @@ export class DatepickerCore {
 
   /*Hooks*/
   beforeCoreInit = () => {
-    this.beforeInitSchelude.forEach((hook) => {
+    this.beforeInitLifecyclePool.forEach((hook) => {
       hook(this);
     })
   }
 
   afterCoreInit = () => {
-    this.afterInitSchelude.forEach((hook) => {
+    this.afterInitLifecyclePool.forEach((hook) => {
       hook(this);
     })
   }
 
   afterFillUpDaySlot = () => {
-    this.afterFillUpDaySlotElementsSchedule.forEach((hook) => {
+    this.afterFillUpDaySlotElementsLifecyclePool.forEach((hook) => {
       hook(this);
     })
   }
