@@ -8,22 +8,23 @@ import {
 const a = performance.now();
 
 const calendarInstance = new DatePicker({
-  // container: '[data-calendar]',  // document.querySelector('[data-calendar]'):def
+  // container: '[data-datepicker]',  // document.querySelector('[data-datepicker]'):def
   mode: 'timeRange', // dateSingle:def, dateRange, timeSingle, timeRange, dateRangeTimeStartEnd
   // startDate: null,  // new Date(), timestamp, todayStart:def (ok)
   timeGap: 3600, // seconds between time slots
   exceptions: [
-    {
-      name: 'generalSchedule',
-      from: '01:00',
-      to: '10:00'
-    },
     {
       name: 'HEXSlots',
       list: "89090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909",
       from: 1745366400,
       to: 1753218000
     },
+    {
+      name: 'generalSchedule',
+      from: '01:00',
+      to: '10:00'
+    },
+
 
   ],
   autoSelectFirstDate: true, // true, false:def
@@ -39,4 +40,17 @@ const calendarInstance = new DatePicker({
   mondayIsFirstDayOfWeek: false // true, false
 });
 
-document.body.insertAdjacentHTML('beforeend', `<div>${(performance.now() - a).toFixed(2)} ms </div>`)
+document.body.insertAdjacentHTML('beforeend', `<div>${(performance.now() - a).toFixed(2)} ms </div>`);
+
+document.querySelector('#datepicker-hext-extend-data').addEventListener('click', () => {
+  const a = performance.now();
+
+  calendarInstance.extendHEXSlotsData({
+    list: "89090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909",
+    from: 1753218000,
+    to: 1760994000,
+    duration: 3600
+  })
+  document.body.insertAdjacentHTML('beforeend', `<div>${(performance.now() - a).toFixed(2)} ms </div>`);
+  console.log(calendarInstance);
+})
