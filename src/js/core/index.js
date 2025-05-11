@@ -34,7 +34,7 @@ export class DatepickerCore {
 
     this.container =
         props.container == null
-            ? document.querySelector('[data-calendar]')
+            ? document.querySelector('[data-datepicker]')
             : typeof props.container === 'string'
                 ? document.querySelector(props.container)
                 : props.container;
@@ -106,10 +106,10 @@ export class DatepickerCore {
   }
 
   setEvents = () => {
-    this.prevMontButton = this.container.querySelector('[data-calendar-control="prev"]');
+    this.prevMontButton = this.container.querySelector('[data-datepicker-control="prev"]');
     this.prevMontButton.addEventListener('click', this.setPrevMonth);
 
-    this.nextMontButton = this.container.querySelector('[data-calendar-control="next"]');
+    this.nextMontButton = this.container.querySelector('[data-datepicker-control="next"]');
     this.nextMontButton.addEventListener('click', this.setNextMonth);
   }
 
@@ -159,13 +159,13 @@ export class DatepickerCore {
     this.calendar.innerHTML = `
         <div class="month-wrapper">
             <div class="month-header-wrapper">
-              <svg data-calendar-control="prev" class="calendar-arrow"  viewBox="0 0 10 16" fill="none">
+              <svg data-datepicker-control="prev" class="calendar-arrow"  viewBox="0 0 10 16" fill="none">
                  <path d="M10 0.160001C7.66667 2.72 5.16667 7.04 4.33333 8C5.16667 8.96 7.66667 13.28 10 15.84L9.83333 16C7.5 13.44 0.333334 8.32 0 8C0.333334 7.68 7.5 2.56 9.83333 0L10 0.160001Z"
         fill="currentColor"/>
               </svg>
               <h3 class="month-header"></h3>
     
-              <svg data-calendar-control="next" class="calendar-arrow" viewBox="0 0 6 10" fill="none">
+              <svg data-datepicker-control="next" class="calendar-arrow" viewBox="0 0 6 10" fill="none">
                 <path xmlns="http://www.w3.org/2000/svg" d="M0 9.9C1.4 8.3 2.9 5.6 3.4 5C2.9 4.4 1.4 1.7 0 0.1L0.1 0C1.5 1.6 5.8 4.8 6 5C5.8 5.2 1.5 8.4 0.1 10L0 9.9Z"
         fill="currentColor"/>
               </svg>

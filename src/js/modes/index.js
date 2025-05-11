@@ -178,7 +178,6 @@ export function datepickerModesPatch(props) {
     this.calendar.append(this.timeContainer);
 
     this.onBeforeTimeSlotRenderInit();
-    console.log(this.__allowTimeSlotsRenderAtStart);
     this.__allowTimeSlotsRenderAtStart && this.createTimeSlotElements();
 
     this.timeSelection = ref([]);
@@ -212,6 +211,8 @@ export function datepickerModesPatch(props) {
       let currentSelectionInitTime = this.timeSelection.value[0];
       let currentSelectionEndTime = 0;
 
+      if (currentSelectionInitTime === timeSlot.time) return;
+
       if (currentSelectionInitTime < timeSlot.time) {
         currentSelectionEndTime = timeSlot.time;
       } else {
@@ -225,9 +226,6 @@ export function datepickerModesPatch(props) {
         this.timeSelection.value[0] = currentSelectionInitTime;
         this.timeSelection.value[1] = currentSelectionEndTime;
       }
-
-      console.log(this.timeSelection.value);
-
     } else if (this.timeSelection.value.length > 1) {
 
       this.timeSelection.value.length = 0;

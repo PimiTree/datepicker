@@ -5,7 +5,7 @@
 #### Template 
 
 ```HTML
-<div data-calendar> or <div class="ssn-calendar-container">
+<div data-datepicker> or <div class="ssn-calendar-container">
 ```
 
 ```ecmascript 6
@@ -20,7 +20,7 @@ new DatepickerCore({container: 'ssn-calendar-container'});
 ### container `selector | HTMLElement | null`
 Set datepicker container element.
 
-`default: document.querySelector('[data-calendar]')`
+`default: document.querySelector('[data-datepicker]')`
 
 ### mode `'dateSingle' | 'dateRange' | 'timeSingle' | 'timeRange'`
 Choose picking mode and time picker availability.
