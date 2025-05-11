@@ -9,9 +9,9 @@
 ```
 
 ```ecmascript 6
-new DatepickerCore();
+new Datepicker();
 
-new DatepickerCore({container: 'ssn-calendar-container'});
+new Datepicker({container: 'ssn-calendar-container'});
 ```
 
 ## Options
