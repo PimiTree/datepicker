@@ -10,6 +10,15 @@ export function datepickerModesPatch(props) {
       ? props.mode
       : 'dateSingle';
 
+
+  this.autoSelectFirstDate = props.autoSelectFirstDate != null
+      ? props.autoSelectFirstDate
+      : false;
+
+  this.autoSelectFirstTime = props.autoSelectFirstTime != null
+      ? props.autoSelectFirstTime
+      : false;
+
   this.timeGap =
       props.timeGap != null
       && props.timeGap >= this.MIN_TIME_GAP_SEC
@@ -17,13 +26,12 @@ export function datepickerModesPatch(props) {
           ? props.timeGap * this.MS_IN_SEC
           : false;
 
+
   this.__allowTimeSlotsRenderAtStart = true;
 
   /* Date modes */
   this.setDateMode = (handler, viewEffect) => {
-    this.autoSelectFirstDate = props.autoSelectFirstDate != null
-        ? props.autoSelectFirstDate
-        : false;
+
 
     this.daySlotsContainer.addEventListener('click', handler);
 
@@ -31,6 +39,21 @@ export function datepickerModesPatch(props) {
 
     this.daySelection = ref([]);
     this.daySelection.effect(viewEffect);
+
+    if (this.autoSelectFirstDate) {
+      this.pickFirstAvailableDate();
+    }
+
+    if ((this.mode === 'timeSingle' || this.mode === 'timeRange') && this.autoSelectFirstTime) {
+      this.daySelection.effect(() => {
+        this.pickFirstAvailableTime();
+
+        delete this.daySelection.namedEffects.autoSelectFirstTime;
+      },  {
+        name: 'autoSelectFirstTime',
+        firstCall: false
+      })
+    }
   }
   this.daySingleHandler = (e) => {
     const daySlot = e.target;
@@ -161,14 +184,27 @@ export function datepickerModesPatch(props) {
 
     return false;
   }
+  this.pickFirstAvailableDate = () => {
+
+    console.log(this);
+
+    /*test*/
+    this.daysSlotsElements[14].disable = true;
+    this.daysSlotsElements[15].disable = true;
+    /*test*/
+
+
+    for (let i = 0; i < this.daysSlotsElements.length; i++) {
+      if (!this.daysSlotsElements[i].disable) {
+        this.daysSlotsElements[i].click();
+        return;
+      }
+    }
+  }
   /* Date modes end*/
 
   /* Time modes */
   this.setTimeMode = (timeEffect, selectionEffects, timeHandler) => {
-    this.autoSelectFirstTime = props.autoSelectFirstTime != null
-        ? props.autoSelectFirstTime
-        : false;
-
     this.chosenTime = ref(null, {type: 'setter'});
 
     this.modeMap.dateSingle();
@@ -317,7 +353,6 @@ export function datepickerModesPatch(props) {
       this.timeSlotsElements.push(timeSlot);
     }
   }
-
   this.MSToFormatedAmPmTime = (MS) => {
     const minutes = MS / this.MS_IN_SEC / this.SEC_IN_MIN;
     const hours = minutes / this.MIN_IN_HOUR | 0;
@@ -338,9 +373,16 @@ export function datepickerModesPatch(props) {
 
     return finalTimeString;
   }
-
   this.removeTimeContainer = () => {
     this.timeContainer.remove();
+  }
+  this.pickFirstAvailableTime = () => {
+    for (let i = 0; i < this.timeSlotsElements.length; i++) {
+      if (!this.timeSlotsElements[i].disable) {
+        this.timeSlotsElements[i].click();
+        return;
+      }
+    }
   }
   /* Time modes EMD*/
 

@@ -24,8 +24,8 @@ const calendarInstance = new DatePicker({
 
 
   ],
-  autoSelectFirstDate: true, // true, false:def
-  autoSelectFirstTime: true, // true, false:def <=> mode:timeSingle, timeRange
+  autoSelectFirstDate: false, // true, false:def
+  autoSelectFirstTime: false, // true, false:def <=> mode:timeSingle, timeRange
   preventPastMonthNavigation: false, // true, false:def (ok)
   disableExpiredDates: false, // true, false:def (ok)
   tz: 0, // number in range -12 - 12 (ok)

@@ -142,13 +142,13 @@ this.beforeInitLifecyclePool.push((datepickerInstance) => {
 })
 ```
 
-##  Exceptions
+###  Exceptions
 Group of filters to control availability day and time slots.
 The exceptions are not work together the only one can be applied at once. Current exception type has chosen by first element of `exceptions: []`.
 
-### HEXSlots exception
-#### `reqired: timeGap != null`
-#### `reqired: timeGap != null`
+#### HEXSlots exception module
+`reqired: timeGap != null`
+
 ```ecmascript 6
 exceptions: [
     {
@@ -161,7 +161,7 @@ exceptions: [
 ```
 HEXSlots exception takes from-to range for dates availability control. The `list` parameter is the HEXa decimal representation of continuous time slots in order `from + timeGap * currentSlot`. 
 
-### generalSchedule 
+#### generalSchedule module
 `object`
  
 `required mode: timeSingle | timeRange`
@@ -178,9 +178,7 @@ Set the general available time range.
 
 
 ## Soon:
-1. Option: `autoSelectFirstDate` boolean, core
-2. Option: `autoSelectFirstTime` boolean, core
-3. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default, core
-4. Shift fill up day slots elements down if first day of month 0
-5. Option: `mondayIsFirstDayOfWeek` boolean, core
-6. `disableExpiredDates` must effect on the 
+1. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default, core
+2. Shift fill up day slots elements down if first day of month 0
+3. Option: `mondayIsFirstDayOfWeek` boolean, core
+4. `disableExpiredDates` must effect on the time slots
