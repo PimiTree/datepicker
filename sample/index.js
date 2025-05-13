@@ -23,7 +23,6 @@ const calendarInstance = new DatePicker({
     }
   ],
   autoSelectFirstDate: false, // true, false:def
-  autoSelectFirstTime: false, // true, false:def <=> mode:timeSingle, timeRange
   preventPastMonthNavigation: false, // true, false:def (ok)
   disableExpiredDates: false, // true, false:def (ok)
   disableExpiredTime: false, // true, false: def

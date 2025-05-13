@@ -15,10 +15,6 @@ export function datepickerModesPatch(props) {
       ? props.autoSelectFirstDate
       : false;
 
-  this.autoSelectFirstTime = props.autoSelectFirstTime != null
-      ? props.autoSelectFirstTime
-      : false;
-
   this.disableExpiredTime = props.disableExpiredTime !=null
       ? props.disableExpiredTime
       : false;
@@ -49,17 +45,6 @@ export function datepickerModesPatch(props) {
 
     if (this.autoSelectFirstDate) {
       this.pickFirstAvailableDate();
-    }
-
-    if ((this.mode === 'timeSingle' || this.mode === 'timeRange') && this.autoSelectFirstTime) {
-      this.daySelection.effect(() => {
-        this.pickFirstAvailableTime();
-
-        delete this.daySelection.namedEffects.autoSelectFirstTime;
-      },  {
-        name: 'autoSelectFirstTime',
-        firstCall: false
-      })
     }
   }
   this.daySingleHandler = (e) => {
@@ -192,16 +177,11 @@ export function datepickerModesPatch(props) {
     return false;
   }
   this.pickFirstAvailableDate = () => {
-
-    console.log(this);
-
-    /*test*/
-    this.daysSlotsElements[14].disable = true;
-    this.daysSlotsElements[15].disable = true;
-    /*test*/
-
-
     for (let i = 0; i < this.daysSlotsElements.length; i++) {
+      if (this.daysSlotsElements[i].date.getTime() < this.firstStartDate.getTime()) {
+        continue;
+      }
+
       if (!this.daysSlotsElements[i].disable) {
         this.daysSlotsElements[i].click();
         return;
@@ -384,14 +364,6 @@ export function datepickerModesPatch(props) {
   }
   this.removeTimeContainer = () => {
     this.timeContainer.remove();
-  }
-  this.pickFirstAvailableTime = () => {
-    for (let i = 0; i < this.timeSlotsElements.length; i++) {
-      if (!this.timeSlotsElements[i].disable) {
-        this.timeSlotsElements[i].click();
-        return;
-      }
-    }
   }
   this.disableExpiredTimeEffect = () => {
     if (this.daySelection.value.length === 0) return;

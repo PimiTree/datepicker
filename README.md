@@ -54,14 +54,6 @@ For any mode type, choose the first available date slot.
 
 `default: false`
 
-### autoSelectFirstTime 
-`boolean`
-
-`required mode: 'timeSingle' | 'timeRange`
-
-Choose first available time slot.
-
-`default: false`
 
 ### preventPastMonthNavigation 
 `boolean`
