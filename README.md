@@ -131,7 +131,7 @@ Append and remove loader with datepicker disabling.
 
 ### Modes module: 
 - `beforeTimeSlotRenderInitPool`
-- `beforeTimeSlotsRenderPool` 
+- `beforeTimeSlotsCreatePool` 
 
 Hook pool is just a plain array of functions called at a certain time of Datepicker run phase.
 
@@ -181,4 +181,5 @@ Set the general available time range.
 1. Option `disableExpiredDates` must set the `preventPastMonthNavigation` to true by default, core
 2. Shift fill up day slots elements down if first day of month 0
 3. Option: `mondayIsFirstDayOfWeek` boolean, core
-4. `disableExpiredDates` must effect on the time slots
+4. `disableExpiredTime` must effect on the time slots
+5. `tz` must effect on dates and timeslots 

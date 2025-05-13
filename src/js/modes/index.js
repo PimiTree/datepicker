@@ -19,6 +19,10 @@ export function datepickerModesPatch(props) {
       ? props.autoSelectFirstTime
       : false;
 
+  this.disableExpiredTime = props.disableExpiredTime !=null
+      ? props.disableExpiredTime
+      : false;
+
   this.timeGap =
       props.timeGap != null
       && props.timeGap >= this.MIN_TIME_GAP_SEC
@@ -26,13 +30,16 @@ export function datepickerModesPatch(props) {
           ? props.timeGap * this.MS_IN_SEC
           : false;
 
-
   this.__allowTimeSlotsRenderAtStart = true;
+
+  if (this.disableExpiredTime ) {
+    this.beforeInitLifecyclePool.push(() => {
+      this.disableExpiredDates = true;
+    });
+  }
 
   /* Date modes */
   this.setDateMode = (handler, viewEffect) => {
-
-
     this.daySlotsContainer.addEventListener('click', handler);
 
     this.currentMonthDate.effect(viewEffect, {firstCall: false});
@@ -211,6 +218,10 @@ export function datepickerModesPatch(props) {
     this.daySelection.effect(timeEffect, {firstCall: false});
 
 
+    if (this.disableExpiredTime) {
+      this.daySelection.effect( this.disableExpiredTimeEffect, {firstCall: false});
+    }
+
     this.calendar.append(this.timeContainer);
 
     this.onBeforeTimeSlotRenderInit();
@@ -278,9 +289,7 @@ export function datepickerModesPatch(props) {
     })
   }
   this.timeRangeEffect = (value) => {
-
     if (this.timeSelection.value.length === 0) {
-
       this.timeSlotsElements.forEach((timeSlot) => {
         timeSlot.classList.remove('selected');
       })
@@ -336,7 +345,7 @@ export function datepickerModesPatch(props) {
     this.commonTimeSlotCount = this.MS_IN_DAY / this.timeGap;
 
     // Life cycle hook
-    this.onBeforeTimeSlotsRender();
+    this.onBeforeTimeSlotsCreate();
 
 
     for (let timeSlotCount = 0; timeSlotCount < this.commonTimeSlotCount; timeSlotCount++) {
@@ -384,6 +393,20 @@ export function datepickerModesPatch(props) {
       }
     }
   }
+  this.disableExpiredTimeEffect = () => {
+    if (this.daySelection.value.length === 0) return;
+
+    this.timeSlotsElements.forEach((timeSLot) => {
+      if ( (this.daySelection.value[0].getTime() + timeSLot.time) <= new Date().getTime() + this.timeGap) {
+        timeSLot.disable = true;
+        timeSLot.classList.add('disabled');
+      } else {
+        timeSLot.disable = false;
+        timeSLot.classList.remove('disabled');
+
+      }
+    })
+  }
   /* Time modes EMD*/
 
   /*Hook pools */
@@ -394,9 +417,9 @@ export function datepickerModesPatch(props) {
     })
   }
 
-  this.beforeTimeSlotsRenderPool = [];
-  this.onBeforeTimeSlotsRender = () => {
-    this.beforeTimeSlotsRenderPool.forEach((hook) => {
+  this.beforeTimeSlotsCreatePool = [];
+  this.onBeforeTimeSlotsCreate = () => {
+    this.beforeTimeSlotsCreatePool.forEach((hook) => {
       hook(this);
     })
   }

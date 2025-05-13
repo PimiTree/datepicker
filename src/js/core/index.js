@@ -57,10 +57,19 @@ export class DatepickerCore {
             : '24';
 
 
+    this.disableExpiredDates = props.disableExpiredDates !=null
+        ? props.disableExpiredDates
+        : false;
+
+    this.preventPastMonthNavigation = props.preventPastMonthNavigation !=null
+        ? props.preventPastMonthNavigation
+        : false;
+
+    this.mondayIsFirstDayOfWeek = props.mondayIsFirstDayOfWeek !=null
+        ? props.mondayIsFirstDayOfWeek
+        : false;
+
     this.localization = props.localization;
-    this.preventPastMonthNavigation = props.preventPastMonthNavigation;
-    this.disableExpiredDates = props.disableExpiredDates;
-    this.mondayIsFirstDayOfWeek = props.mondayIsFirstDayOfWeek;
 
     this.tz = props.tz || 0;
 
