@@ -15,8 +15,8 @@ export function datepickerModesPatch(props) {
       ? props.autoSelectFirstDate
       : false;
 
-  this.autoSelectFirstTime = props.autoSelectFirstTime != null
-      ? props.autoSelectFirstTime
+  this.disableExpiredTime = props.disableExpiredTime != null
+      ? props.disableExpiredTime
       : false;
 
   this.timeGap =
@@ -27,12 +27,14 @@ export function datepickerModesPatch(props) {
           : false;
 
 
-  this.__allowTimeSlotsRenderAtStart = true;
+  if (this.disableExpiredTime) {
+    this.beforeInitLifecyclePool.push(() => {
+      this.disableExpiredDates = true;
+    });
+  }
 
   /* Date modes */
   this.setDateMode = (handler, viewEffect) => {
-
-
     this.daySlotsContainer.addEventListener('click', handler);
 
     this.currentMonthDate.effect(viewEffect, {firstCall: false});
@@ -42,17 +44,6 @@ export function datepickerModesPatch(props) {
 
     if (this.autoSelectFirstDate) {
       this.pickFirstAvailableDate();
-    }
-
-    if ((this.mode === 'timeSingle' || this.mode === 'timeRange') && this.autoSelectFirstTime) {
-      this.daySelection.effect(() => {
-        this.pickFirstAvailableTime();
-
-        delete this.daySelection.namedEffects.autoSelectFirstTime;
-      },  {
-        name: 'autoSelectFirstTime',
-        firstCall: false
-      })
     }
   }
   this.daySingleHandler = (e) => {
@@ -185,16 +176,11 @@ export function datepickerModesPatch(props) {
     return false;
   }
   this.pickFirstAvailableDate = () => {
-
-    console.log(this);
-
-    /*test*/
-    this.daysSlotsElements[14].disable = true;
-    this.daysSlotsElements[15].disable = true;
-    /*test*/
-
-
     for (let i = 0; i < this.daysSlotsElements.length; i++) {
+      if (this.daysSlotsElements[i].date.getTime() < this.firstStartDate.getTime()) {
+        continue;
+      }
+
       if (!this.daysSlotsElements[i].disable) {
         this.daysSlotsElements[i].click();
         return;
@@ -208,13 +194,19 @@ export function datepickerModesPatch(props) {
     this.chosenTime = ref(null, {type: 'setter'});
 
     this.modeMap.dateSingle();
-    this.daySelection.effect(timeEffect, {firstCall: false});
+    this.daySelection.effect(
+        [
+          timeEffect,
+          this.createTimeSlotElements,
+        ]
+        , {firstCall: false}
+    );
 
+    if (this.disableExpiredTime) {
+      this.afterTimeSlotsRenderPool.push(this.disableExpiredTimeEffect);
+    }
 
     this.calendar.append(this.timeContainer);
-
-    this.onBeforeTimeSlotRenderInit();
-    this.__allowTimeSlotsRenderAtStart && this.createTimeSlotElements();
 
     this.timeSelection = ref([]);
     this.timeSelection.effect(selectionEffects, {firstCall: false});
@@ -256,7 +248,7 @@ export function datepickerModesPatch(props) {
         currentSelectionEndTime = this.timeSelection.value[0];
       }
 
-      if (this.timeSlotsElements.some((element) => element.time >= currentSelectionInitTime && element.time <= currentSelectionEndTime && element.disable)) {
+      if (this.timeSlotElements.some((element) => element.time >= currentSelectionInitTime && element.time <= currentSelectionEndTime && element.disable)) {
         this.timeSelection.value[0] = timeSlot.time;
       } else {
         this.timeSelection.value[0] = currentSelectionInitTime;
@@ -269,7 +261,7 @@ export function datepickerModesPatch(props) {
     }
   }
   this.timeSingleEffect = () => {
-    this.timeSlotsElements.forEach((timeSlot) => {
+    this.timeSlotElements.forEach((timeSlot) => {
       if (timeSlot.time === this.timeSelection.value[0]) {
         timeSlot.classList.add('selected');
       } else {
@@ -278,17 +270,15 @@ export function datepickerModesPatch(props) {
     })
   }
   this.timeRangeEffect = (value) => {
-
     if (this.timeSelection.value.length === 0) {
-
-      this.timeSlotsElements.forEach((timeSlot) => {
+      this.timeSlotElements.forEach((timeSlot) => {
         timeSlot.classList.remove('selected');
       })
 
     } else if (this.timeSelection.value.length === 1) {
 
       const currentSelectionInitTime = value[0];
-      this.timeSlotsElements.forEach((timeSlot) => {
+      this.timeSlotElements.forEach((timeSlot) => {
         if (timeSlot.time === currentSelectionInitTime) {
           timeSlot.classList.add('selected');
         } else {
@@ -301,7 +291,7 @@ export function datepickerModesPatch(props) {
       const currentSelectionInitTime = value[0];
       const currentSelectionEndTime = value[1];
 
-      this.timeSlotsElements.forEach((timeSlot) => {
+      this.timeSlotElements.forEach((timeSlot) => {
         timeSlot.classList.remove('selected', 'selected-in-range');
 
         const daySlotTime = timeSlot.time;
@@ -329,15 +319,14 @@ export function datepickerModesPatch(props) {
     this.chosenTime.value = [startTime, endTime];
   }
   this.createTimeSlotElements = () => {
-    this.timeSlotsElements.length = 0;
+    this.timeSlotElements.length = 0;
     this.timeContainer.innerHTML = '';
 
     this.timeSlotsinitTime = 0;
     this.commonTimeSlotCount = this.MS_IN_DAY / this.timeGap;
 
-    // Life cycle hook
-    this.onBeforeTimeSlotsRender();
-
+    // life cycle hook
+    this.beforeTimeSlotsRender();
 
     for (let timeSlotCount = 0; timeSlotCount < this.commonTimeSlotCount; timeSlotCount++) {
       const timeSlot = document.createElement('div');
@@ -350,8 +339,10 @@ export function datepickerModesPatch(props) {
       timeSlot.disable = false;
 
       this.timeContainer.append(timeSlot);
-      this.timeSlotsElements.push(timeSlot);
+      this.timeSlotElements.push(timeSlot);
     }
+
+    this.afterTimeSlotsRender();
   }
   this.MSToFormatedAmPmTime = (MS) => {
     const minutes = MS / this.MS_IN_SEC / this.SEC_IN_MIN;
@@ -376,27 +367,32 @@ export function datepickerModesPatch(props) {
   this.removeTimeContainer = () => {
     this.timeContainer.remove();
   }
-  this.pickFirstAvailableTime = () => {
-    for (let i = 0; i < this.timeSlotsElements.length; i++) {
-      if (!this.timeSlotsElements[i].disable) {
-        this.timeSlotsElements[i].click();
-        return;
+  this.disableExpiredTimeEffect = () => {
+    if (this.daySelection.value.length === 0) return;
+
+    this.timeSlotElements.forEach((timeSLot) => {
+      if ((this.daySelection.value[0].getTime() + timeSLot.time) <= new Date().getTime()) {
+        timeSLot.disable = true;
+        timeSLot.classList.add('disabled');
+
+        console.log(timeSLot);
       }
-    }
+    })
   }
-  /* Time modes EMD*/
+  /* Time modes END*/
+
 
   /*Hook pools */
-  this.beforeTimeSlotRenderInitPool = [];
-  this.onBeforeTimeSlotRenderInit = () => {
-    this.beforeTimeSlotRenderInitPool.forEach((hook) => {
+  this.beforeTimeSlotsRenderPool = [];
+  this.beforeTimeSlotsRender = () => {
+    this.beforeTimeSlotsRenderPool.length !== 0 && this.beforeTimeSlotsRenderPool.forEach((hook) => {
       hook(this);
     })
   }
 
-  this.beforeTimeSlotsRenderPool = [];
-  this.onBeforeTimeSlotsRender = () => {
-    this.beforeTimeSlotsRenderPool.forEach((hook) => {
+  this.afterTimeSlotsRenderPool = [];
+  this.afterTimeSlotsRender = () => {
+    this.afterTimeSlotsRenderPool.length !== 0 && this.afterTimeSlotsRenderPool.forEach((hook) => {
       hook(this);
     })
   }

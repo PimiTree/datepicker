@@ -23,7 +23,7 @@ Loader functions:
 
 Elements pool:
  - `daysSlotsElements`
- - `timeSlotsElements`
+ - `timeSlotElements`
 
 [Read more][1]
 

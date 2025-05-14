@@ -19,21 +19,19 @@ const calendarInstance = new DatePicker({
     {
       name: 'generalSchedule',
       from: '01:00',
-      to: '10:00'
+      to: '16:00'
     },
-
-
   ],
-  autoSelectFirstDate: false, // true, false:def
-  autoSelectFirstTime: false, // true, false:def <=> mode:timeSingle, timeRange
-  preventPastMonthNavigation: false, // true, false:def (ok)
+  autoSelectFirstDate: true, // true, false:def
+  preventPastMonthNavigation: true, // true, false:def (ok)
   disableExpiredDates: false, // true, false:def (ok)
+  disableExpiredTime: true, // true, false: def
   tz: 0, // number in range -12 - 12 (ok)
   showOtherMonthsDays: true, // false, true:def (ok)
   localization: {
     dayOfWeek: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   },  // (ok)
-  timeFormat: '12', // '12', '24':def (ok)
+  timeFormat: '12', // '12', '24':def (ok)v
   mondayIsFirstDayOfWeek: false // true, false
 });
 
