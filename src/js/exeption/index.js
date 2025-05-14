@@ -9,44 +9,6 @@ export function datepickerExceptionsPatch(props) {
     this.exceptionsPrepareMap[this.exception.name]();
   }
 
-  this.createHEXSlotsTimeElements = () => {
-    this.timeSlotsElements = [];
-    this.timeContainer.innerHTML = '';
-
-    if (this.daySelection.value.length !== 1) return;
-
-    console.log(this.schedule);
-
-    const localDate = this.daySelection.value[0];
-    const localYear = localDate.getFullYear();
-    const localMonth = localDate.getMonth();
-    const localDay = localDate.getDate();
-    const localDayStartTS = new Date(localYear, localMonth, localDay).getTime();
-
-    this.schedule[localYear][localMonth][localDay].forEach((timeSlot) => {
-      const timeSlotElement = document.createElement('div');
-      timeSlotElement.classList.add('time');
-
-      const fromSLotsTime = timeSlot.date.getTime();
-      const slotTime = fromSLotsTime - localDayStartTS;
-
-      timeSlotElement.textContent = this.MSToFormatedAmPmTime(slotTime);
-      timeSlotElement.time = slotTime;
-      timeSlotElement.disable = timeSlot.disable;
-
-      if (this.disableExpiredTime && fromSLotsTime <= new Date().getTime() + this.timeGap) {
-        timeSlotElement.disable = true;
-      }
-
-      if (timeSlot.disable || timeSlotElement.disable) {
-        timeSlotElement.classList.add('disabled');
-      }
-
-      this.timeContainer.append(timeSlotElement);
-      this.timeSlotsElements.push(timeSlotElement);
-    });
-  }
-
   this.exceptionsPrepareMap = {
     HEXSlots: () => {
       this.schedule = {};
@@ -57,9 +19,9 @@ export function datepickerExceptionsPatch(props) {
       this.processHEXtoBinSlotExceptions(this.exception);
       this.prepareSchedule();
 
-      this.HEXSlots = () => {
+      this.daysSlotsElementsHEXSlotsPostProcessing = () => {
         this.daysSlotsElements.forEach((daySlot) => {
-          if (daySlot.date === null) return;
+          if (daySlot.date == null) return;
 
           const fullYear = daySlot.date.getFullYear();
           const month = daySlot.date.getMonth();
@@ -86,19 +48,8 @@ export function datepickerExceptionsPatch(props) {
       }
 
       // add actions to life cycle pool
-      this.afterFillUpDaySlotElementsLifecyclePool.push(this.HEXSlots);
-      this.beforeTimeSlotRenderInitPool.push(() => {
-        this.__allowTimeSlotsRenderAtStart = false;
-      });
+      this.afterFillUpDaySlotElementsLifecyclePool.push(this.daysSlotsElementsHEXSlotsPostProcessing);
 
-      this.afterInitLifecyclePool.push(() => {
-        this.daySelection.effect([
-          this.createHEXSlotsTimeElements,
-          () => {
-            this.timeSelection.value.length = 0
-          }
-        ]);
-      });
     },
     generalSchedule: () => {
       const from = this.exception.from.split(':').reduce((time, cur, i) => {
@@ -124,12 +75,6 @@ export function datepickerExceptionsPatch(props) {
         from: from,
         to: to
       };
-
-      // add actions to life cycle pool
-      this.beforeTimeSlotsCreatePool.push(() => {
-        this.timeSlotsinitTime = this.generalSchedule.from;
-        this.commonTimeSlotCount = (this.generalSchedule.to - this.generalSchedule.from) / this.timeGap;
-      });
     }
   }
 

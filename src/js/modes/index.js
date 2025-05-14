@@ -26,7 +26,6 @@ export function datepickerModesPatch(props) {
           ? props.timeGap * this.MS_IN_SEC
           : false;
 
-  this.__allowTimeSlotsRenderAtStart = true;
 
   if (this.disableExpiredTime ) {
     this.beforeInitLifecyclePool.push(() => {
@@ -204,8 +203,7 @@ export function datepickerModesPatch(props) {
 
     this.calendar.append(this.timeContainer);
 
-    this.onBeforeTimeSlotRenderInit();
-    this.__allowTimeSlotsRenderAtStart && this.createTimeSlotElements();
+    this.createTimeSlotElements();
 
     this.timeSelection = ref([]);
     this.timeSelection.effect(selectionEffects, {firstCall: false});
@@ -324,10 +322,6 @@ export function datepickerModesPatch(props) {
     this.timeSlotsinitTime = 0;
     this.commonTimeSlotCount = this.MS_IN_DAY / this.timeGap;
 
-    // Life cycle hook
-    this.onBeforeTimeSlotsCreate();
-
-
     for (let timeSlotCount = 0; timeSlotCount < this.commonTimeSlotCount; timeSlotCount++) {
       const timeSlot = document.createElement('div');
       timeSlot.classList.add('time');
@@ -381,21 +375,9 @@ export function datepickerModesPatch(props) {
   }
   /* Time modes EMD*/
 
-  /*Hook pools */
-  this.beforeTimeSlotRenderInitPool = [];
-  this.onBeforeTimeSlotRenderInit = () => {
-    this.beforeTimeSlotRenderInitPool.forEach((hook) => {
-      hook(this);
-    })
-  }
 
-  this.beforeTimeSlotsCreatePool = [];
-  this.onBeforeTimeSlotsCreate = () => {
-    this.beforeTimeSlotsCreatePool.forEach((hook) => {
-      hook(this);
-    })
-  }
-  /*Hook pools END*/
+
+
 
 
   this.modeMap = {
