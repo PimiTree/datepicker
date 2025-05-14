@@ -40,7 +40,6 @@ export function datepickerExceptionsPatch(props) {
       }
 
       this.timeSlotElementsPostProcessing = () => {
-        console.log(this.schedule);
 
         if (this.daySelection.value.length === 0) {
           this.timeContainer.innerHTML = '';
@@ -54,15 +53,11 @@ export function datepickerExceptionsPatch(props) {
           const month = date.getMonth();
           const day = date.getDate();
 
-          console.log(
-              'time', time
-          );
 
          const timeSlot = this.schedule[year][month][day].find((timeSlot) => timeSlot.date.getTime() === time);
 
-         if (timeSlot !== undefined && !timeSlot.disable) {
-           slotElement.classList.remove('disabled');
-         } else {
+         if (timeSlot === undefined || timeSlot.disable) {
+           slotElement.disable = true;
            slotElement.classList.add('disabled');
          }
         })

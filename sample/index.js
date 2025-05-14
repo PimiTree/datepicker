@@ -16,17 +16,16 @@ const calendarInstance = new DatePicker({
       from: 1746990000,
       to: 1754935200
     },
-    // {
-    //   name: 'generalSchedule',
-    //   from: '01:00',
-    //   to: '10:00'
-    // },
-
+    {
+      name: 'generalSchedule',
+      from: '01:00',
+      to: '16:00'
+    },
   ],
-  autoSelectFirstDate: false, // true, false:def
-  preventPastMonthNavigation: false, // true, false:def (ok)
+  autoSelectFirstDate: true, // true, false:def
+  preventPastMonthNavigation: true, // true, false:def (ok)
   disableExpiredDates: false, // true, false:def (ok)
-  disableExpiredTime: false, // true, false: def
+  disableExpiredTime: true, // true, false: def
   tz: 0, // number in range -12 - 12 (ok)
   showOtherMonthsDays: true, // false, true:def (ok)
   localization: {

@@ -15,7 +15,7 @@ export function datepickerModesPatch(props) {
       ? props.autoSelectFirstDate
       : false;
 
-  this.disableExpiredTime = props.disableExpiredTime !=null
+  this.disableExpiredTime = props.disableExpiredTime != null
       ? props.disableExpiredTime
       : false;
 
@@ -27,7 +27,7 @@ export function datepickerModesPatch(props) {
           : false;
 
 
-  if (this.disableExpiredTime ) {
+  if (this.disableExpiredTime) {
     this.beforeInitLifecyclePool.push(() => {
       this.disableExpiredDates = true;
     });
@@ -203,7 +203,7 @@ export function datepickerModesPatch(props) {
     );
 
     if (this.disableExpiredTime) {
-      this.daySelection.effect( this.disableExpiredTimeEffect, {firstCall: false});
+      this.afterTimeSlotsRenderPool.push(this.disableExpiredTimeEffect);
     }
 
     this.calendar.append(this.timeContainer);
@@ -371,13 +371,11 @@ export function datepickerModesPatch(props) {
     if (this.daySelection.value.length === 0) return;
 
     this.timeSlotElements.forEach((timeSLot) => {
-      if ( (this.daySelection.value[0].getTime() + timeSLot.time) <= new Date().getTime() + this.timeGap) {
+      if ((this.daySelection.value[0].getTime() + timeSLot.time) <= new Date().getTime()) {
         timeSLot.disable = true;
         timeSLot.classList.add('disabled');
-      } else {
-        timeSLot.disable = false;
-        timeSLot.classList.remove('disabled');
 
+        console.log(timeSLot);
       }
     })
   }
@@ -399,8 +397,6 @@ export function datepickerModesPatch(props) {
     })
   }
   /*Hook pools END*/
-
-
 
 
   this.modeMap = {

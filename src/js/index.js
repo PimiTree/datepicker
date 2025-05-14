@@ -6,7 +6,7 @@ import {
 } from "./modes/index.js";
 import {
   datepickerExceptionsPatch
-} from "./exeption/index.js";
+} from "./exception/index.js";
 
 export class DatePicker {
   constructor(props) {

@@ -57,15 +57,15 @@ export class DatepickerCore {
             : '24';
 
 
-    this.disableExpiredDates = props.disableExpiredDates !=null
+    this.disableExpiredDates = props.disableExpiredDates != null
         ? props.disableExpiredDates
         : false;
 
-    this.preventPastMonthNavigation = props.preventPastMonthNavigation !=null
+    this.preventPastMonthNavigation = props.preventPastMonthNavigation != null
         ? props.preventPastMonthNavigation
         : false;
 
-    this.mondayIsFirstDayOfWeek = props.mondayIsFirstDayOfWeek !=null
+    this.mondayIsFirstDayOfWeek = props.mondayIsFirstDayOfWeek != null
         ? props.mondayIsFirstDayOfWeek
         : false;
 
@@ -85,7 +85,8 @@ export class DatepickerCore {
 
   init = () => {
 
-    this.beforeInitLifecyclePool.length > 0 && this.beforeCoreInit()
+    //  life cycle hooks pool
+    this.beforeCoreInit()
 
     /* Core init*/
     this.container.classList.add('ssn-calendar-container');
@@ -98,7 +99,10 @@ export class DatepickerCore {
     /* Core init END*/
 
 
-    this.afterInitLifecyclePool.length > 0 && this.afterCoreInit();
+    // life cycle hooks pool
+    this.afterCoreInit();
+
+    console.log(this.afterTimeSlotsRenderPool);
 
     return this;
   }
@@ -295,7 +299,7 @@ export class DatepickerCore {
     }
 
     // life cycle pool call
-    this.afterFillUpDaySlotElementsLifecyclePool.length > 0 && this.afterFillUpDaySlot();
+    this.afterFillUpDaySlot();
   }
 
   prevMonthButtonVisibilityControlEffect = () => {
@@ -348,19 +352,19 @@ export class DatepickerCore {
 
   /*Hooks*/
   beforeCoreInit = () => {
-    this.beforeInitLifecyclePool.forEach((hook) => {
+    this.beforeInitLifecyclePool.length > 0 && this.beforeInitLifecyclePool.forEach((hook) => {
       hook(this);
     })
   }
 
   afterCoreInit = () => {
-    this.afterInitLifecyclePool.forEach((hook) => {
+    this.afterInitLifecyclePool.length > 0 && this.afterInitLifecyclePool.forEach((hook) => {
       hook(this);
     })
   }
 
   afterFillUpDaySlot = () => {
-    this.afterFillUpDaySlotElementsLifecyclePool.forEach((hook) => {
+    this.afterFillUpDaySlotElementsLifecyclePool.length > 0 && this.afterFillUpDaySlotElementsLifecyclePool.forEach((hook) => {
       hook(this);
     })
   }
