@@ -16,11 +16,11 @@ const calendarInstance = new DatePicker({
     //   from: 1746990000,
     //   to: 1754935200
     // },
-    // {
-    //   name: 'generalSchedule',
-    //   from: '01:00',
-    //   to: '10:00'
-    // },
+    {
+      name: 'generalSchedule',
+      from: '01:00',
+      to: '10:00'
+    },
 
   ],
   autoSelectFirstDate: false, // true, false:def

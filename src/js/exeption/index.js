@@ -75,6 +75,11 @@ export function datepickerExceptionsPatch(props) {
         from: from,
         to: to
       };
+
+      this.beforeTimeSlotsRenderPool.push(() => {
+        this.timeSlotsinitTime = this.generalSchedule.from;
+        this.commonTimeSlotCount = (this.generalSchedule.to - this.generalSchedule.from) / this.timeGap;
+      });
     }
   }
 

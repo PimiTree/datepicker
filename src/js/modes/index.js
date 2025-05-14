@@ -194,7 +194,13 @@ export function datepickerModesPatch(props) {
     this.chosenTime = ref(null, {type: 'setter'});
 
     this.modeMap.dateSingle();
-    this.daySelection.effect(timeEffect, {firstCall: false});
+    this.daySelection.effect(
+        [
+          timeEffect,
+          this.createTimeSlotElements,
+        ]
+        , {firstCall: false}
+    );
 
 
     if (this.disableExpiredTime) {
@@ -202,8 +208,6 @@ export function datepickerModesPatch(props) {
     }
 
     this.calendar.append(this.timeContainer);
-
-    this.createTimeSlotElements();
 
     this.timeSelection = ref([]);
     this.timeSelection.effect(selectionEffects, {firstCall: false});
@@ -322,6 +326,9 @@ export function datepickerModesPatch(props) {
     this.timeSlotsinitTime = 0;
     this.commonTimeSlotCount = this.MS_IN_DAY / this.timeGap;
 
+    // life cycle hook
+    this.beforeTimeSlotsRender();
+
     for (let timeSlotCount = 0; timeSlotCount < this.commonTimeSlotCount; timeSlotCount++) {
       const timeSlot = document.createElement('div');
       timeSlot.classList.add('time');
@@ -373,9 +380,18 @@ export function datepickerModesPatch(props) {
       }
     })
   }
-  /* Time modes EMD*/
+  /* Time modes END*/
 
 
+  /*Hook pools */
+  this.beforeTimeSlotsRenderPool = [];
+
+  this.beforeTimeSlotsRender = () => {
+    this.beforeTimeSlotsRenderPool.forEach((hook) => {
+      hook(this);
+    })
+  }
+  /*Hook pools END*/
 
 
 
