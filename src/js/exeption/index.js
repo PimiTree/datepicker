@@ -16,10 +16,10 @@ export function datepickerExceptionsPatch(props) {
       this.exception.from *= 1000;
       this.exception.to *= 1000;
 
-      this.processHEXtoBinSlotExceptions(this.exception);
+      this.processHEXtoBinSlotExceptions();
       this.prepareSchedule();
 
-      this.daysSlotsElementsHEXSlotsPostProcessing = () => {
+      this.daySlotElementsHEXSlotsPostProcessing = () => {
         this.daysSlotsElements.forEach((daySlot) => {
           if (daySlot.date == null) return;
 
@@ -36,7 +36,41 @@ export function datepickerExceptionsPatch(props) {
             daySlot.disable = true
           }
         })
+
       }
+
+      this.timeSlotElementsPostProcessing = () => {
+        console.log(this.schedule);
+
+        if (this.daySelection.value.length === 0) {
+          this.timeContainer.innerHTML = '';
+          return;
+        }
+
+        this.timeSlotElements.forEach((slotElement) => {
+          const time = (this.daySelection.value[0].getTime() + slotElement.time);
+          const date = new Date(time);
+          const year = date.getFullYear();
+          const month = date.getMonth();
+          const day = date.getDate();
+
+          console.log(
+              'time', time
+          );
+
+         const timeSlot = this.schedule[year][month][day].find((timeSlot) => timeSlot.date.getTime() === time);
+
+         if (timeSlot !== undefined && !timeSlot.disable) {
+           slotElement.classList.remove('disabled');
+         } else {
+           slotElement.classList.add('disabled');
+         }
+        })
+      }
+
+      // add actions to life cycle pool
+      this.afterFillUpDaySlotElementsLifecyclePool.push(this.daySlotElementsHEXSlotsPostProcessing);
+      this.afterTimeSlotsRenderPool.push(this.timeSlotElementsPostProcessing);
 
       this.extendHEXSlotsData = (data) => {
         this.timeGap = data.duration * 1000;
@@ -46,10 +80,6 @@ export function datepickerExceptionsPatch(props) {
         this.processHEXtoBinSlotExceptions(data);
         this.prepareSchedule();
       }
-
-      // add actions to life cycle pool
-      this.afterFillUpDaySlotElementsLifecyclePool.push(this.daysSlotsElementsHEXSlotsPostProcessing);
-
     },
     generalSchedule: () => {
       const from = this.exception.from.split(':').reduce((time, cur, i) => {
@@ -84,15 +114,17 @@ export function datepickerExceptionsPatch(props) {
   }
 
   this.processHEXtoBinSlotExceptions = (slots) => {
+    const HEXString = this.exception.list;
+
     if (this.slots === undefined) {
       this.slots = [];
     }
     this.slots[this.slots.length] = {
-      from: slots.from,
-      to: slots.to,
+      from: this.exception.from,
+      to: this.exception.to,
       slots: []
     };
-    this.slots[this.slots.length - 1].slots.push(...slots.list
+    this.slots[this.slots.length - 1].slots.push(...HEXString
         .split('')
         .map(a => parseInt(a, 16).toString(2).padStart(4, '0'))
         .join('')

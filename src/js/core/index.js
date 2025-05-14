@@ -76,7 +76,7 @@ export class DatepickerCore {
     this.firstStartDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth());
 
     this.daysSlotsElements = [];
-    this.timeSlotsElements = [];
+    this.timeSlotElements = [];
 
     this.beforeInitLifecyclePool = [];
     this.afterInitLifecyclePool = [];

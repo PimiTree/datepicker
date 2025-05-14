@@ -202,7 +202,6 @@ export function datepickerModesPatch(props) {
         , {firstCall: false}
     );
 
-
     if (this.disableExpiredTime) {
       this.daySelection.effect( this.disableExpiredTimeEffect, {firstCall: false});
     }
@@ -249,7 +248,7 @@ export function datepickerModesPatch(props) {
         currentSelectionEndTime = this.timeSelection.value[0];
       }
 
-      if (this.timeSlotsElements.some((element) => element.time >= currentSelectionInitTime && element.time <= currentSelectionEndTime && element.disable)) {
+      if (this.timeSlotElements.some((element) => element.time >= currentSelectionInitTime && element.time <= currentSelectionEndTime && element.disable)) {
         this.timeSelection.value[0] = timeSlot.time;
       } else {
         this.timeSelection.value[0] = currentSelectionInitTime;
@@ -262,7 +261,7 @@ export function datepickerModesPatch(props) {
     }
   }
   this.timeSingleEffect = () => {
-    this.timeSlotsElements.forEach((timeSlot) => {
+    this.timeSlotElements.forEach((timeSlot) => {
       if (timeSlot.time === this.timeSelection.value[0]) {
         timeSlot.classList.add('selected');
       } else {
@@ -272,14 +271,14 @@ export function datepickerModesPatch(props) {
   }
   this.timeRangeEffect = (value) => {
     if (this.timeSelection.value.length === 0) {
-      this.timeSlotsElements.forEach((timeSlot) => {
+      this.timeSlotElements.forEach((timeSlot) => {
         timeSlot.classList.remove('selected');
       })
 
     } else if (this.timeSelection.value.length === 1) {
 
       const currentSelectionInitTime = value[0];
-      this.timeSlotsElements.forEach((timeSlot) => {
+      this.timeSlotElements.forEach((timeSlot) => {
         if (timeSlot.time === currentSelectionInitTime) {
           timeSlot.classList.add('selected');
         } else {
@@ -292,7 +291,7 @@ export function datepickerModesPatch(props) {
       const currentSelectionInitTime = value[0];
       const currentSelectionEndTime = value[1];
 
-      this.timeSlotsElements.forEach((timeSlot) => {
+      this.timeSlotElements.forEach((timeSlot) => {
         timeSlot.classList.remove('selected', 'selected-in-range');
 
         const daySlotTime = timeSlot.time;
@@ -320,7 +319,7 @@ export function datepickerModesPatch(props) {
     this.chosenTime.value = [startTime, endTime];
   }
   this.createTimeSlotElements = () => {
-    this.timeSlotsElements.length = 0;
+    this.timeSlotElements.length = 0;
     this.timeContainer.innerHTML = '';
 
     this.timeSlotsinitTime = 0;
@@ -340,8 +339,10 @@ export function datepickerModesPatch(props) {
       timeSlot.disable = false;
 
       this.timeContainer.append(timeSlot);
-      this.timeSlotsElements.push(timeSlot);
+      this.timeSlotElements.push(timeSlot);
     }
+
+    this.afterTimeSlotsRender();
   }
   this.MSToFormatedAmPmTime = (MS) => {
     const minutes = MS / this.MS_IN_SEC / this.SEC_IN_MIN;
@@ -369,7 +370,7 @@ export function datepickerModesPatch(props) {
   this.disableExpiredTimeEffect = () => {
     if (this.daySelection.value.length === 0) return;
 
-    this.timeSlotsElements.forEach((timeSLot) => {
+    this.timeSlotElements.forEach((timeSLot) => {
       if ( (this.daySelection.value[0].getTime() + timeSLot.time) <= new Date().getTime() + this.timeGap) {
         timeSLot.disable = true;
         timeSLot.classList.add('disabled');
@@ -385,9 +386,15 @@ export function datepickerModesPatch(props) {
 
   /*Hook pools */
   this.beforeTimeSlotsRenderPool = [];
-
   this.beforeTimeSlotsRender = () => {
-    this.beforeTimeSlotsRenderPool.forEach((hook) => {
+    this.beforeTimeSlotsRenderPool.length !== 0 && this.beforeTimeSlotsRenderPool.forEach((hook) => {
+      hook(this);
+    })
+  }
+
+  this.afterTimeSlotsRenderPool = [];
+  this.afterTimeSlotsRender = () => {
+    this.afterTimeSlotsRenderPool.length !== 0 && this.afterTimeSlotsRenderPool.forEach((hook) => {
       hook(this);
     })
   }
