@@ -13,8 +13,8 @@ export function datepickerExceptionsPatch(props) {
     HEXSlots: () => {
       this.schedule = {};
 
-      this.exception.from *= 1000;
-      this.exception.to *= 1000;
+      this.exception.from = this.processDateFromServer(this.exception.from * 1000);
+      this.exception.to = this.processDateFromServer(this.exception.to * 1000);
 
       this.processHEXtoBinSlotExceptions();
       this.prepareSchedule();
