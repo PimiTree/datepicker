@@ -371,7 +371,6 @@ export class DatepickerCore {
 
   /*Hooks end*/
 
-
   get clientStartDate() {
     return new Date(this.clientInitDate.getFullYear(), this.clientInitDate.getMonth(), this.clientInitDate.getDate());
   }
