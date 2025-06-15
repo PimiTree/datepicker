@@ -6,21 +6,21 @@ const a = performance.now();
 
 const calendarInstance = new DatePicker({
   // container: '[data-datepicker]',  // document.querySelector('[data-datepicker]'):def
-  mode: 'timeRange', // dateSingle:def, dateRange, timeSingle, timeRange
+  mode: "timeRange", // dateSingle:def, dateRange, timeSingle, timeRange
   // startDate: null,  // new Date(), timestamp, todayStart:def (ok)
-  timeGap: 3600, // seconds between time slots
+  timeGap: 600, // seconds between time slots
   exceptions: [
     {
       name: 'HEXSlots',
-      list: "800000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000007e7e007e7e007e7e007e7e007e7e007000000000",
-      from: 1746990000,
-      to: 1754935200
+      list: "0003ff7feffdffbff7fe001ffbff7feffdfffff8007feffdffbff7feffc003ff7feffdfffffbff000ffdffbff7feffdff8007feffdfffffbff7fe001ffbff7feffdffbff000ffdfffffbff7feffc003ff7feffdffbff7fe001fffffbff7feffdff8007feffdffbff7feffc003ffbff7feffdffbff000ffdffbff7feffdffc00",
+      from: 1750032000,
+      to: 1757894400
     },
-    {
-      name: 'generalSchedule',
-      from: '01:00',
-      to: '16:00'
-    },
+    // {
+    //   name: 'generalSchedule',
+    //   from: '01:00',
+    //   to: '16:00'
+    // },
   ],
   autoSelectFirstDate: true, // true, false:def
   preventPastMonthNavigation: true, // true, false:def (ok)
@@ -41,7 +41,7 @@ document.querySelector('#datepicker-hext-extend-data').addEventListener('click',
   const a = performance.now();
 
   calendarInstance.extendHEXSlotsData({
-    list: "89090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909",
+    list: "79090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909090909000009090909090000090909090900000909",
     from: 1753218000,
     to: 1760994000,
     duration: 3600

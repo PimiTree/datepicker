@@ -323,6 +323,11 @@ export class DatepickerCore {
     return this.convertCurrentTimezoneOffset(date.getTime(), this.tz) / 1000;
   }
 
+  processTSToServer = (ts) => {
+    return this.convertCurrentTimezoneOffset(ts, this.tz) / 1000;
+  }
+
+
   convertCurrentTimezoneOffset = (timestamp, toTimezoneOffset, reverse) => {
     const fromTimezoneOffset = new Date().getTimezoneOffset();
     const offsetDifference = ((toTimezoneOffset * 60) + fromTimezoneOffset) * 60 * 1000;

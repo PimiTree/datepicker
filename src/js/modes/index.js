@@ -33,6 +33,11 @@ export function datepickerModesPatch(props) {
     });
   }
 
+  this.chosenTS = ref(null, {type: 'setter'});
+  this.chosenTS.effect((value) => {
+    console.log(value);
+  }, {firstCall: false});
+
   /* Date modes */
   this.setDateMode = (handler, viewEffect) => {
     this.daySlotsContainer.addEventListener('click', handler);
@@ -148,12 +153,13 @@ export function datepickerModesPatch(props) {
     const startDate = this.daySelection.value[0];
     const startYear = startDate.getFullYear();
     const startMonth = startDate.getMonth();
-    const startDay = startDate.getDate() - 1;
+    const startDay = startDate.getDate();
 
     const endDate = this.daySelection.value[1];
     const endYear = endDate.getFullYear();
     const endMonth = endDate.getMonth();
-    const endDay = endDate.getDate() - 1;
+    const endDay = endDate.getDate();
+
 
     const yearDifference = endYear - startYear;
 
@@ -162,13 +168,18 @@ export function datepickerModesPatch(props) {
       const initMonth = i + startYear === startYear ? startMonth : 0;
       const lastMonth = i + startYear === endYear ? endMonth : this.MONTH_IN_YEAR;
 
+
       for (let j = initMonth; j <= lastMonth; j++) {
 
-        const initDay = i + startYear === startYear && j === startMonth ? startDay : 0;
-        const lastDay = i + endYear === endYear && j === endMonth ? endDay : this.schedule[startYear + i][j].length;
 
-        for (let k = initDay; k < lastDay; k++) {
-          if (this.schedule[startYear + i][j][k].length === 0) return true
+        const initDay = i + startYear === startYear && j === startMonth ? startDay : 1;
+        const lastDay = i + startYear === endYear && j === endMonth ? endDay : Math.max(...Object.keys(this.schedule[startYear + i][j]));
+
+        for (let k = initDay; k <= lastDay; k++) {
+          this.schedule[startYear + i][j][k].forEach((slot) => {
+            if (slot.disabled) return true
+          })
+
         }
       }
     }
@@ -190,13 +201,12 @@ export function datepickerModesPatch(props) {
   /* Date modes end*/
 
   /* Time modes */
-  this.setTimeMode = (timeEffect, selectionEffects, timeHandler) => {
-    this.chosenTime = ref(null, {type: 'setter'});
+  this.setTimeMode = (selectionEffects, timeHandler) => {
+
 
     this.modeMap.dateSingle();
     this.daySelection.effect(
         [
-          timeEffect,
           this.createTimeSlotElements,
         ]
         , {firstCall: false}
@@ -304,19 +314,29 @@ export function datepickerModesPatch(props) {
     }
   }
   this.chosenTimeSingleEffect = () => {
-    if (this.daySelection.value[0] === undefined || this.timeSelection.value[0] === undefined) return;
+    if (this.daySelection.value[0] === undefined || this.timeSelection.value[0] === undefined) {
+      this.chosenTimeClear();
+      return;
+    }
 
-    this.chosenTime.value = this.daySelection.value[0].getTime() + this.timeSelection.value[0];
+    const ts = this.daySelection.value[0].getTime() + this.timeSelection.value[0];
+    this.chosenTS.value = [ts, ts + this.timeGap];
   }
   this.chosenTimeRangeEffect = () => {
-    if (this.daySelection.value[0] === undefined || this.timeSelection.value[0] === undefined) return;
+    if (this.daySelection.value[0] === undefined || this.timeSelection.value[0] === undefined) {
+      this.chosenTimeClear();
+      return;
+    }
 
-    const startTime = new Date(this.daySelection.value[0].getTime() + this.timeSelection.value[0]);
+    const startTime = this.daySelection.value[0].getTime() + this.timeSelection.value[0];
     const endTime = this.timeSelection.value[1]
-        ? new Date(this.daySelection.value[0].getTime() + this.timeSelection.value[1])
-        : null;
+        ? this.daySelection.value[0].getTime() + this.timeSelection.value[1]
+        : startTime;
 
-    this.chosenTime.value = [startTime, endTime];
+    this.chosenTS.value = [startTime, endTime + this.timeGap];
+  }
+  this.chosenTimeClear = () => {
+    this.chosenTS.value = [];
   }
   this.createTimeSlotElements = () => {
     this.timeSlotElements.length = 0;
@@ -374,8 +394,6 @@ export function datepickerModesPatch(props) {
       if ((this.daySelection.value[0].getTime() + timeSLot.time) <= new Date().getTime()) {
         timeSLot.disable = true;
         timeSLot.classList.add('disabled');
-
-        console.log(timeSLot);
       }
     })
   }
@@ -402,26 +420,47 @@ export function datepickerModesPatch(props) {
   this.modeMap = {
     dateSingle: () => {
       this.setDateMode(this.daySingleHandler, this.daySingleViewEffect);
+
+      if (this.mode === "dateSingle") {
+        this.daySelection.effect((value) => {
+          if (value[0] === undefined) {
+            this.chosenTimeClear();
+            return;
+          }
+
+          const ts = value[0].getTime();
+
+          this.chosenTS.value = [ts, ts + this.timeGap];
+        });
+      }
     },
     dateRange: () => {
       this.setDateMode(this.dayRangeHandler, this.dayRangeViewEffect);
+
+      if (this.mode === "dateRange") {
+        this.daySelection.effect((value) => {
+          const fromTs = value[0].getTime();
+          const toTs = value[1] !== undefined ? value[1].getTime() : fromTs;
+
+          this.chosenTS.value = [fromTs, toTs + this.timeGap];
+        });
+      }
+
     },
     timeSingle: () => {
       this.setTimeMode(
-          this.chosenTimeSingleEffect,
           [
             this.timeSingleEffect,
-            this.chosenTimeSingleEffect
+            this.chosenTimeSingleEffect,
           ],
           this.timeSingeHandler
       )
     },
     timeRange: () => {
       this.setTimeMode(
-          this.chosenTimeRangeEffect,
           [
             this.timeRangeEffect,
-            this.chosenTimeRangeEffect
+            this.chosenTimeRangeEffect,
           ],
           this.timeRangeHandler
       )
