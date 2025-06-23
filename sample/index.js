@@ -12,9 +12,9 @@ const calendarInstance = new DatePicker({
   exceptions: [
     {
       name: 'HEXSlots',
-      list: "0003ff7feffdffbff7fe001ffbff7feffdfffff8007feffdffbff7feffc003ff7feffdfffffbff000ffdffbff7feffdff8007feffdfffffbff7fe001ffbff7feffdffbff000ffdfffffbff7feffc003ff7feffdffbff7fe001fffffbff7feffdff8007feffdffbff7feffc003ffbff7feffdffbff000ffdffbff7feffdffc00",
-      from: 1750032000,
-      to: 1757894400
+      list: "7ff7feffdffbff7fe001ffbff7feffdffbff8007feffdffbff7feffc003ff7feffdffbfffff000ffdffbff7feffdff8007feffdffbfffff7fe001ffbff7feffdffbff000ffdffbfffff7feffc003ff7feffdffbff7fe001ffbfffff7feffdff8007feffdffbff7feffc003fffff7feffdffbff000ffdffbff7feffdff8007ff",
+      from: 1750668000,
+      to: 1758608400
     },
     // {
     //   name: 'generalSchedule',

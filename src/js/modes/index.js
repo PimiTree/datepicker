@@ -37,6 +37,9 @@ export function datepickerModesPatch(props) {
   this.chosenTS.effect((value) => {
     console.log(value);
   }, {firstCall: false});
+  this.chosenTimeClear = () => {
+    this.chosenTS.value = [];
+  }
 
   /* Date modes */
   this.setDateMode = (handler, viewEffect) => {
@@ -223,6 +226,9 @@ export function datepickerModesPatch(props) {
 
     this.timeContainer.addEventListener('click', timeHandler);
   }
+  this.timeSelectionClear = () => {
+    this.timeSelection.value.length = 0;
+  }
   this.timeSingeHandler = (e) => {
     const timeSlot = e.target;
 
@@ -231,7 +237,7 @@ export function datepickerModesPatch(props) {
     if (timeSlot.time !== this.timeSelection.value[0]) {
       this.timeSelection.value[0] = timeSlot.time
     } else {
-      this.timeSelection.value.length = 0;
+      this.timeSelectionClear();
     }
   }
   this.timeRangeHandler = (e) => {
@@ -266,7 +272,7 @@ export function datepickerModesPatch(props) {
       }
     } else if (this.timeSelection.value.length > 1) {
 
-      this.timeSelection.value.length = 0;
+      this.timeSelectionClear();
       this.timeSelection.value[0] = timeSlot.time;
     }
   }
@@ -334,9 +340,6 @@ export function datepickerModesPatch(props) {
         : startTime;
 
     this.chosenTS.value = [startTime, endTime + this.timeGap];
-  }
-  this.chosenTimeClear = () => {
-    this.chosenTS.value = [];
   }
   this.createTimeSlotElements = () => {
     this.timeSlotElements.length = 0;
@@ -432,6 +435,12 @@ export function datepickerModesPatch(props) {
 
           this.chosenTS.value = [ts, ts + this.timeGap];
         });
+      }
+
+      if (this.mode === 'timeRange' || this.mode === 'timeSingle') {
+        this.daySelection.effect(() => {
+          this.timeSelectionClear();
+        }, {firstCall: false});
       }
     },
     dateRange: () => {
