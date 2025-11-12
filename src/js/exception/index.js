@@ -1,117 +1,9 @@
 // Created by PimiTree https://github.com/PimiTree/datepicker
 
-export function datepickerExceptionsPatch(props) {
-  this.exceptions = props.exceptions;
 
-  this.setExceptions = () => {
-    this.exception = this.exceptions[0];
-
-    this.exceptionsPrepareMap[this.exception.name]();
-  }
-
-  this.exceptionsPrepareMap = {
-    HEXSlots: () => {
-      this.schedule = {};
-
-      this.exception.from = this.processDateFromServer(this.exception.from);
-      this.exception.to = this.processDateFromServer(this.exception.to);
-
-      this.processHEXtoBinSlotExceptions();
-      this.prepareSchedule();
-
-      this.daySlotElementsHEXSlotsPostProcessing = () => {
-        this.daysSlotsElements.forEach((daySlot) => {
-          if (daySlot.date == null) return;
-
-          const fullYear = daySlot.date.getFullYear();
-          const month = daySlot.date.getMonth();
-          const day = daySlot.date.getDate();
-
-          if (
-              this.schedule[fullYear] === undefined
-              || this.schedule[fullYear][month] === undefined
-              || this.schedule[fullYear][month][day] === undefined
-              || this.schedule[fullYear][month][day].length === 0
-          ) {
-            daySlot.disable = true
-          }
-        })
-
-      }
-
-      this.timeSlotElementsPostProcessing = () => {
-
-        if (this.daySelection.value.length === 0) {
-          this.timeContainer.innerHTML = '';
-          return;
-        }
-
-        this.timeSlotElements.forEach((slotElement) => {
-          const time = (this.daySelection.value[0].getTime() + slotElement.time);
-          const date = new Date(time);
-          const year = date.getFullYear();
-          const month = date.getMonth();
-          const day = date.getDate();
-
-
-          const timeSlot = this.schedule[year][month][day].find((timeSlot) => timeSlot.date.getTime() === time);
-
-          if (timeSlot === undefined || timeSlot.disable) {
-            slotElement.disable = true;
-            slotElement.classList.add('disabled');
-          }
-        })
-      }
-
-      // add actions to life cycle pool
-      this.afterFillUpDaySlotElementsLifecyclePool.push(this.daySlotElementsHEXSlotsPostProcessing);
-
-      if (!['dateSingle', 'dateRange'].includes(this.mode)) {
-        this.afterTimeSlotsRenderPool.push(this.timeSlotElementsPostProcessing);
-      }
-
-
-      this.extendHEXSlotsData = (data) => {
-        this.timeGap = data.duration * 1000;
-        data.from *= 1000;
-        data.to *= 1000;
-
-        this.processHEXtoBinSlotExceptions();
-        this.prepareSchedule();
-      }
-    },
-    generalSchedule: () => {
-      const from = this.exception.from.split(':').reduce((time, cur, i) => {
-        if (i === 0) {
-          time += cur * this.MS_IN_HOUR;
-        } else if (i === 1) {
-          time += cur * this.MS_IN_MIN;
-        }
-
-        return time;
-      }, 0);
-      const to = this.exception.to.split(':').reduce((time, cur, i) => {
-        if (i === 0) {
-          time += cur * this.MS_IN_HOUR;
-        } else if (i === 1) {
-          time += cur * this.MS_IN_MIN;
-        }
-
-        return time;
-      }, 0);
-
-      this.generalSchedule = {
-        from: from,
-        to: to
-      };
-
-      this.beforeTimeSlotsRenderPool.push(() => {
-        this.timeSlotsinitTime = this.generalSchedule.from;
-        this.commonTimeSlotCount = (this.generalSchedule.to - this.generalSchedule.from) / this.timeGap;
-      });
-    }
-  }
-
+// Separate HEXSlots and generalScheduleMode onto to patches
+export function datepickerExceptionsPatch({ exceptions }) {
+  /*HexSlot exceptions*/
   this.processHEXtoBinSlotExceptions = () => {
     if (this.slots === undefined) {
       this.slots = [];
@@ -123,7 +15,6 @@ export function datepickerExceptionsPatch(props) {
       slots: this.hexToBinary(this.exception.list)
     });
   }
-
   this.prepareSchedule = () => {
     this.slots.forEach((subslots) => {
       const from = new Date(subslots.from);
@@ -165,7 +56,6 @@ export function datepickerExceptionsPatch(props) {
 
     })
   }
-
   this.hexToBinary = (hex) =>  {
     const lookup = {
       '0': '0000', '1': '0001', '2': '0010', '3': '0011',
@@ -187,7 +77,115 @@ export function datepickerExceptionsPatch(props) {
 
     return binaryArray;
   }
+  this.extendHEXSlotsData = (data) => {
+    this.timeGap = data.duration * 1000;
+    data.from *= 1000;
+    data.to *= 1000;
 
-  // add actions to life cycle pool
+    this.processHEXtoBinSlotExceptions();
+    this.prepareSchedule();
+  }
+  this.HEXSlotsModeHandler = () => {
+    this.schedule = {};
+
+    this.exception.from = this.processDateFromServer(this.exception.from);
+    this.exception.to = this.processDateFromServer(this.exception.to);
+
+    this.processHEXtoBinSlotExceptions();
+    this.prepareSchedule();
+
+    this.daySlotElementsHEXSlotsPostProcessing = () => {
+      this.daysSlotsElements.forEach((daySlot) => {
+        if (daySlot.date == null) return;
+
+        const fullYear = daySlot.date.getFullYear();
+        const month = daySlot.date.getMonth();
+        const day = daySlot.date.getDate();
+
+        if (
+            this.schedule[fullYear] === undefined
+            || this.schedule[fullYear][month] === undefined
+            || this.schedule[fullYear][month][day] === undefined
+            || this.schedule[fullYear][month][day].length === 0
+        ) {
+          daySlot.disable = true
+        }
+      })
+
+    }
+
+    this.timeSlotElementsPostProcessing = () => {
+
+      if (this.daySelection.value.length === 0) {
+        this.timeContainer.innerHTML = '';
+        return;
+      }
+
+      this.timeSlotElements.forEach((slotElement) => {
+        const time = (this.daySelection.value[0].getTime() + slotElement.time);
+        const date = new Date(time);
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
+
+
+        const timeSlot = this.schedule[year][month][day].find((timeSlot) => timeSlot.date.getTime() === time);
+
+        if (timeSlot === undefined || timeSlot.disable) {
+          slotElement.disable = true;
+          slotElement.classList.add('disabled');
+        }
+      })
+    }
+
+    // add actions to life cycle pool
+    this.afterFillUpDaySlotElementsLifecyclePool.push(this.daySlotElementsHEXSlotsPostProcessing);
+
+    if (!['dateSingle', 'dateRange'].includes(this.mode)) {
+      this.afterTimeSlotsRenderPool.push(this.timeSlotElementsPostProcessing);
+    }
+  }
+  /*HexSlot exceptions end*/
+  
+  /*General schedule Exceptions*/
+  this.generalScheduleModeHandler = () => {
+    const from = this.exception.from.split(':').reduce((time, cur, i) => {
+      if (i === 0) {
+        time += cur * this.MS_IN_HOUR;
+      } else if (i === 1) {
+        time += cur * this.MS_IN_MIN;
+      }
+
+      return time;
+    }, 0);
+    const to = this.exception.to.split(':').reduce((time, cur, i) => {
+      if (i === 0) {
+        time += cur * this.MS_IN_HOUR;
+      } else if (i === 1) {
+        time += cur * this.MS_IN_MIN;
+      }
+
+      return time;
+    }, 0);
+
+    this.generalSchedule = {from, to};
+    this.beforeTimeSlotsRenderPool.push(() => {
+      this.timeSlotsinitTime = from;
+      this.commonTimeSlotCount = (to - from) / this.timeGap;
+    });
+  }
+  /*General schedule Exceptions END*/
+  
+  this.exceptionsPrepareMap = {
+    HEXSlotsModeHandler: this.HEXSlotsModeHandler,
+    generalSchedule: this.generalScheduleModeHandler
+  }
+  
+  this.setExceptions = () => {
+    this.exception = exceptions[0];
+
+    this.exceptionsPrepareMap[this.exception.name]();
+  }
+
   this.beforeInitLifecyclePool.push(this.setExceptions);
 }

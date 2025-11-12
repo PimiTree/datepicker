@@ -10,9 +10,7 @@
   --datepicker-palette-9: #F2F3F7;
   --datepicker-palette-10: #ffbe64c7;
   --datepicker-palette-11: rgba(248, 213, 169, 0.78);
-}
-
-:root {
+  
   /* std */
   --datepicker-hover-transition: 0.3s ease;
   --datepicker-border-radius: 4px;
@@ -34,6 +32,7 @@
   --datepicker-border-time-right-color: var(--datepicker-palette-8);
   --datepicker-selected-bg-color: var(--datepicker-palette-3);
   --datepicker-selected-in-range-another-month-bg-color: var(--datepicker-palette-11);
-
+  
+  --max-width: 394px;
 }
 

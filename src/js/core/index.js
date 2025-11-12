@@ -2,7 +2,7 @@
 
 import {
   ref
-} from "../reactivity/index.js"
+} from "../reactivity/reactivity.js"
 
 
 export class DatepickerCore {
@@ -326,8 +326,7 @@ export class DatepickerCore {
   processTSToServer = (ts) => {
     return this.convertCurrentTimezoneOffset(ts, this.tz) / 1000;
   }
-
-
+  
   convertCurrentTimezoneOffset = (timestamp, toTimezoneOffset, reverse) => {
     const fromTimezoneOffset = new Date().getTimezoneOffset();
     const offsetDifference = ((toTimezoneOffset * 60) + fromTimezoneOffset) * 60 * 1000;
@@ -373,7 +372,6 @@ export class DatepickerCore {
       hook(this);
     })
   }
-
   /*Hooks end*/
 
   get clientStartDate() {
@@ -388,7 +386,6 @@ export class DatepickerCore {
   get clientMonth() {
     return this.clientInitDate.getMonth();
   }
-
 }
 
 

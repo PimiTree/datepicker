@@ -2,41 +2,9 @@
 
 import {
   ref
-} from "../reactivity/index.js";
+} from "../reactivity/reactivity.js";
 
 export function datepickerModesPatch(props) {
-
-  this.mode = props.mode != null
-      ? props.mode
-      : 'dateSingle';
-
-
-  this.autoSelectFirstDate = props.autoSelectFirstDate != null
-      ? props.autoSelectFirstDate
-      : false;
-
-  this.disableExpiredTime = props.disableExpiredTime != null
-      ? props.disableExpiredTime
-      : false;
-
-  this.timeGap =
-      props.timeGap != null
-      && props.timeGap >= this.MIN_TIME_GAP_SEC
-      && props.timeGap <= this.MAX_TIME_GAP_SEC
-          ? props.timeGap * this.MS_IN_SEC
-          : false;
-
-
-  if (this.disableExpiredTime) {
-    this.beforeInitLifecyclePool.push(() => {
-      this.disableExpiredDates = true;
-    });
-  }
-
-  this.chosenTS = ref(null, {type: 'setter'});
-  this.chosenTS.effect((value) => {
-    console.log(value);
-  }, {firstCall: false});
   this.chosenTimeClear = () => {
     this.chosenTS.value = [];
   }
@@ -419,62 +387,99 @@ export function datepickerModesPatch(props) {
   }
   /*Hook pools END*/
 
+  /*Mode handlers*/
+  this.dateSingle = () => {
+    this.setDateMode(this.daySingleHandler, this.daySingleViewEffect);
 
-  this.modeMap = {
-    dateSingle: () => {
-      this.setDateMode(this.daySingleHandler, this.daySingleViewEffect);
+    if (this.mode === "dateSingle") {
+      this.daySelection.effect((value) => {
+        if (value[0] === undefined) {
+          this.chosenTimeClear();
+          return;
+        }
 
-      if (this.mode === "dateSingle") {
-        this.daySelection.effect((value) => {
-          if (value[0] === undefined) {
-            this.chosenTimeClear();
-            return;
-          }
+        const ts = value[0].getTime();
 
-          const ts = value[0].getTime();
+        this.chosenTS.value = [ts, ts + this.timeGap];
+      });
+    }
 
-          this.chosenTS.value = [ts, ts + this.timeGap];
-        });
-      }
+    if (this.mode === 'timeRange' || this.mode === 'timeSingle') {
+      this.daySelection.effect(() => {
+        this.timeSelectionClear();
+      }, {firstCall: false});
+    }
+  }
+  this.dateRange = () => {
+    this.setDateMode(this.dayRangeHandler, this.dayRangeViewEffect);
 
-      if (this.mode === 'timeRange' || this.mode === 'timeSingle') {
-        this.daySelection.effect(() => {
-          this.timeSelectionClear();
-        }, {firstCall: false});
-      }
-    },
-    dateRange: () => {
-      this.setDateMode(this.dayRangeHandler, this.dayRangeViewEffect);
+    if (this.mode === "dateRange") {
+      this.daySelection.effect((value) => {
+        const fromTs = value[0].getTime();
+        const toTs = value[1] !== undefined ? value[1].getTime() : fromTs;
 
-      if (this.mode === "dateRange") {
-        this.daySelection.effect((value) => {
-          const fromTs = value[0].getTime();
-          const toTs = value[1] !== undefined ? value[1].getTime() : fromTs;
+        this.chosenTS.value = [fromTs, toTs + this.timeGap];
+      });
+    }
 
-          this.chosenTS.value = [fromTs, toTs + this.timeGap];
-        });
-      }
+  }
+  this.timeSingle = () => {
+    this.setTimeMode(
+        [
+          this.timeSingleEffect,
+          this.chosenTimeSingleEffect,
+        ],
+        this.timeSingeHandler
+    )
+  }
+  this.timeRange = () => {
+    this.setTimeMode(
+        [
+          this.timeRangeEffect,
+          this.chosenTimeRangeEffect,
+        ],
+        this.timeRangeHandler
+    )
+  }
+  /*Mode handlers END*/
 
-    },
-    timeSingle: () => {
-      this.setTimeMode(
-          [
-            this.timeSingleEffect,
-            this.chosenTimeSingleEffect,
-          ],
-          this.timeSingeHandler
-      )
-    },
-    timeRange: () => {
-      this.setTimeMode(
-          [
-            this.timeRangeEffect,
-            this.chosenTimeRangeEffect,
-          ],
-          this.timeRangeHandler
-      )
-    },
+  
+  this.mode = props.mode != null
+      ? props.mode
+      : 'dateSingle';
+
+  this.autoSelectFirstDate = props.autoSelectFirstDate != null
+      ? props.autoSelectFirstDate
+      : false;
+
+  this.disableExpiredTime = props.disableExpiredTime != null
+      ? props.disableExpiredTime
+      : false;
+
+  this.timeGap =
+      props.timeGap != null
+      && props.timeGap >= this.MIN_TIME_GAP_SEC
+      && props.timeGap <= this.MAX_TIME_GAP_SEC
+          ? props.timeGap * this.MS_IN_SEC
+          : false;
+
+  if (this.disableExpiredTime) {
+    this.beforeInitLifecyclePool.push(() => {
+      this.disableExpiredDates = true;
+    });
   }
 
+  this.chosenTS = ref(null, {type: 'setter'});
+  this.chosenTS.effect((value) => {
+    console.log(value);
+  }, {firstCall: false});
+
+
+  this.modeMap = {
+    dateSingle: this.dateSingle ,
+    dateRange: this.dateRange,
+    timeSingle: this.timeSingle,
+    timeRange: this.timeRange,
+  }
   this.afterInitLifecyclePool.push(this.modeMap[this.mode]);
 }
